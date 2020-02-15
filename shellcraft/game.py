@@ -1,5 +1,5 @@
 import curses
-from . import player, world
+from . import computer, player, world
 import time
 
 class Game:
@@ -32,6 +32,8 @@ class Game:
         self.world = world.World(self.stdscr)
         self.world.generate()
 
+        comp = computer.Computer("hello")
+
         while (True):
             c = stdscr.getch()
 
@@ -41,10 +43,18 @@ class Game:
             # preferably some dispatch function?
             # NOTE THAT PLAYER Y VALUE DOES NOT WRAP (BUT X DOES)
 
-            self.render()
+            if c == 101:
+                comp.editor(self.stdscr)
+
+            else:
+                self.render()
+
+            time.sleep(2)
+
+            if comp.process != None:
+                print(comp.read_pipe())
 
             self.stdscr.refresh()
-            time.sleep(.5)
 
     # Actually runs the game
     def run(self):
