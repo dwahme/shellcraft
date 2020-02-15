@@ -1,5 +1,5 @@
 import curses
-
+import time
 
 class Game:
 
@@ -12,6 +12,16 @@ class Game:
 
         self.stdscr.nodelay(True)
         self.stdscr.clear()
+        curses.curs_set(0)
+
+        while (True):
+            c = stdscr.getch()
+
+            # Handle input here
+            # Draw the new game here
+
+            window.refresh()
+            time.sleep(0.1)
 
     # Actually runs the game
     def run(self):
