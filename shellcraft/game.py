@@ -1,5 +1,5 @@
 import curses
-from . import player, world
+from . import player, world, blocks
 import time
 
 class Game:
@@ -17,6 +17,8 @@ class Game:
 
         
         screen_start = (max(p_y * 3 - h // 2, 0 ), p_x * 5 - w // 2)
+
+        self.world.map[p_y][p_x] = blocks.Block("PLAYER", self.stdscr)
 
         for y in range(0, h - 2, 3):
             for x in range(0, w - 5, 5):
@@ -42,6 +44,7 @@ class Game:
             # or get some other input here and handle
             # preferably some dispatch function?
             # NOTE THAT PLAYER Y VALUE DOES NOT WRAP (BUT X DOES)
+            self.player.handleMovement(c)
 
             self.render()
 
