@@ -1,14 +1,20 @@
 import curses
 import time
 
+
 class Game:
 
     def __init__(self):
-        self.stdscr = None
+        self.window = None
+        self.map = []
+
+    def render(self):
+        h, w = stdscr.getmaxyx()
 
     # The main game loop, use run() instead
     def __main(self, stdscr):
         self.stdscr = stdscr
+        self.window = curses.initscr()
 
         self.stdscr.nodelay(True)
         self.stdscr.clear()
@@ -20,7 +26,7 @@ class Game:
             # Handle input here
             # Draw the new game here
 
-            window.refresh()
+            self.window.refresh()
             time.sleep(0.1)
 
     # Actually runs the game
