@@ -15,11 +15,12 @@ class Game:
         p_y, p_x = self.player.coords()
         p_x %= world.World.max_x
 
-        screen_start = (p_y * 3 - h // 2, p_x * 5 - w // 2)
+        
+        screen_start = (max(p_y * 3 - h // 2, 0 ), p_x * 5 - w // 2)
 
         for y in range(0, h - 2, 3):
-            for x in range(0, w - 4, 5):
-                ret = self.world.draw(y, x, (screen_start[0] + y) // 3, (screen_start[1] + x) // 5)
+            for x in range(0, w - 5, 5):
+                ret = self.world.draw(y, x, (screen_start[0] + y) // 3 , (screen_start[1] + x) // 5)
 
     # The main game loop, use run() instead
     def __main(self, stdscr):
@@ -31,6 +32,7 @@ class Game:
 
         self.world = world.World(self.stdscr)
         self.world.generate()
+        self.player.y, self.player.x = self.world.spawn()
 
         comp = computer.Computer("hello")
 

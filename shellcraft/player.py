@@ -1,4 +1,3 @@
-
 class Player:
 
     def __init__(self):
@@ -7,3 +6,5 @@ class Player:
 
     def coords(self):
         return self.y, self.x
+
+    
