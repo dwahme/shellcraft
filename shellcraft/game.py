@@ -11,7 +11,9 @@ class Game:
 
     def render(self):
         h, w = self.stdscr.getmaxyx()
+
         p_y, p_x = self.player.coords()
+        p_x %= world.World.max_x
 
         
         screen_start = (max(p_y * 3 - h // 2, 0 ), p_x * 5 - w // 2)
@@ -36,7 +38,10 @@ class Game:
             c = stdscr.getch()
 
             # Handle input here
-            # Draw the new game here
+            # TODO- yves: based upon the character that's inputted, do update player y/x
+            # or get some other input here and handle
+            # preferably some dispatch function?
+            # NOTE THAT PLAYER Y VALUE DOES NOT WRAP (BUT X DOES)
 
             self.render()
 
