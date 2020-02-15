@@ -11,7 +11,7 @@ class Game:
 
     def render(self):
         h, w = self.stdscr.getmaxyx()
-        p_y, p_x = player.coords()
+        p_y, p_x = self.player.coords()
 
         y_min = max(0, p_y - (p_y // 2))
         y_max = min(h, p_y + (p_y // 2))

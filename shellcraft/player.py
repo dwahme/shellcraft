@@ -6,4 +6,4 @@ class Player:
         self.x = 0
 
     def coords(self):
-        return y, x
+        return self.y, self.x
