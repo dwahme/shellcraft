@@ -68,25 +68,9 @@ class Block:
         """
         # print('=========' )
         # curses.init_pair(9, curses.COLOR_RED, curses.COLOR_WHITE)
-        self.screen.addstr(self.locY, self.locX, self.blocktype.blocks[0][0].char, self.blocktype.blocks[0][0].colorpair)
-        self.screen.addstr(self.locY, self.locX + 1, self.blocktype.blocks[0][1].char, self.blocktype.blocks[0][1].colorpair)
-        self.screen.addstr(self.locY, self.locX + 2, self.blocktype.blocks[0][2].char, self.blocktype.blocks[0][2].colorpair)
-        self.screen.addstr(self.locY, self.locX + 3, self.blocktype.blocks[0][3].char, self.blocktype.blocks[0][3].colorpair)
-        self.screen.addstr(self.locY, self.locX + 4, self.blocktype.blocks[0][4].char, self.blocktype.blocks[0][4].colorpair)
-
-
-        self.screen.addstr(self.locY + 1, self.locX, self.blocktype.blocks[1][0].char, self.blocktype.blocks[1][0].colorpair)
-        self.screen.addstr(self.locY + 1, self.locX + 1, self.blocktype.blocks[1][1].char, self.blocktype.blocks[1][1].colorpair)
-        self.screen.addstr(self.locY + 1, self.locX + 2, self.blocktype.blocks[1][2].char, self.blocktype.blocks[1][2].colorpair)
-        self.screen.addstr(self.locY + 1, self.locX + 3, self.blocktype.blocks[1][3].char, self.blocktype.blocks[1][3].colorpair)
-        self.screen.addstr(self.locY + 1, self.locX + 4, self.blocktype.blocks[1][4].char, self.blocktype.blocks[1][4].colorpair)
-
-
-        self.screen.addstr(self.locY + 2, self.locX, self.blocktype.blocks[2][0].char, self.blocktype.blocks[2][0].colorpair)
-        self.screen.addstr(self.locY + 2, self.locX + 1, self.blocktype.blocks[2][1].char, self.blocktype.blocks[2][1].colorpair)
-        self.screen.addstr(self.locY + 2, self.locX + 2, self.blocktype.blocks[2][2].char, self.blocktype.blocks[2][2].colorpair)
-        self.screen.addstr(self.locY + 2, self.locX + 3, self.blocktype.blocks[2][3].char, self.blocktype.blocks[2][3].colorpair)
-        self.screen.addstr(self.locY + 2, self.locX + 4, self.blocktype.blocks[1][4].char, self.blocktype.blocks[1][4].colorpair)
+        for i in range(3):
+            for j in range(5):
+                self.screen.addstr(self.locY + i, self.locX + j, self.blocktype.blocks[i][j].char, self.blocktype.blocks[i][j].colorpair)
         
 
 
