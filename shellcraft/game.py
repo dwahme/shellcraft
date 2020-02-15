@@ -43,18 +43,18 @@ class Game:
             # preferably some dispatch function?
             # NOTE THAT PLAYER Y VALUE DOES NOT WRAP (BUT X DOES)
 
-            if c == 101:
+            if c == 114: # r
+                comp.run()
+            if c == 101: # e
                 comp.editor(self.stdscr)
-
             else:
                 self.render()
-
-            time.sleep(2)
 
             if comp.process != None:
                 print(comp.read_pipe())
 
             self.stdscr.refresh()
+            time.sleep(.5)
 
     # Actually runs the game
     def run(self):

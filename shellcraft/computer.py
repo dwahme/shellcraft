@@ -5,43 +5,56 @@ from threading import Thread
 
 
 class Computer:
+    CWD = "./computer_files"
     
     def __init__(self, name):
         self.name = name
-        self.run_command = ""
+        self.run_command = "python3"
+
         self.process = None
         self.read_thread = None
-        self.out_queue = None
+        self.out_queue = Queue()
 
+    # Queues output from a process to be read later
     def enqueue_output(self, out, queue):
         for line in iter(out.readline, b''):
             queue.put(line)
         out.close()
 
-    def editor(self, stdscr):
+    # Opens up a text editor for a given computer
+    def editor(self, stdscr, editor="vim"):
         curses.endwin()
-        run(["vim", "{}".format(self.name)], cwd="./computer_files")
+        run([editor, "{}".format(self.name)], cwd=Computer.CWD)
         stdscr.refresh()
+        curses.curs_set(0)
 
-        self.process = Popen(["python3", "{}".format(self.name)], cwd="./computer_files",  stdout=PIPE)
-        self.out_queue = Queue()
-        self.read_thread = Thread(target=self.enqueue_output, args=(self.process.stdout, self.out_queue))
+    # Runs a computer's file and starts queueing its output into self.out_queue
+    def run(self):
+        # Start the process to run the computer's program
+        self.process = Popen([self.run_command, "{}".format(self.name)], 
+                             cwd=Computer.CWD,  stdout=PIPE)
+
+        # Begin queueing the output
+        self.read_thread = Thread(target=self.enqueue_output, 
+                                  args=(self.process.stdout, self.out_queue))
         self.read_thread.daemon = True # thread dies with the program
         self.read_thread.start()
 
-        curses.curs_set(0)
-
+    # Gets all queued output from a computer's process (or None if no output)
     def read_pipe(self):
 
-        done = False
-        out = ""
+        empty = False
+        out = None
 
-        while not done:
+        while not empty:
             try:
                 line = self.out_queue.get_nowait()
             except Empty:
-                done = True
+                empty = True
             else:
+                if out == None:
+                    out = ""
+
                 out += line.decode("utf-8")
-        
+
         return out
