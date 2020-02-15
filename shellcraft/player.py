@@ -7,4 +7,6 @@ class Player:
     def coords(self):
         return self.y, self.x
 
-    
+    def handleMovement(self, c):
+        if (c == 'w'):
+            self.x -= 1

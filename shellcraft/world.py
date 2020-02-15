@@ -59,7 +59,7 @@ class World:
         """
         for y in range(World.max_y):
             if self.map[y][World.max_x//2].type() == "DIRTGRASS":
-                return y, World.max_x//2
+                return y-1, World.max_x//2
             
         return 0, 0
 
