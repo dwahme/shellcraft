@@ -1,3 +1,4 @@
+from . import blocks
 
 class World:
 
@@ -12,14 +13,15 @@ class World:
         for j in range(World.max_y):
             tmp = []
             for i in range(World.max_x):
-                tmp.append(j * 10 + i)
+                stone = blocks.Block("SAND", self.stdscr)
+                tmp.append(stone)
 
             self.map.append(tmp)
 
     # Safely draws a block at a given position
     def draw(self, y, x, block_y, block_x):
         block = self.map[block_y % World.max_y][block_x % World.max_x]
-        # block.draw(y, x)
-        self.stdscr.addstr(y, x, "{}".format(block))
+        block.draw(y, x)
+        # self.stdscr.addstr(y, x, "{}".format(block))
 
         return 0
