@@ -20,8 +20,11 @@ class World:
 
     # Safely draws a block at a given position
     def draw(self, y, x, block_y, block_x):
-        block = self.map[block_y % World.max_y][block_x % World.max_x]
-        block.draw(y, x)
-        # self.stdscr.addstr(y, x, "{}".format(block))
+        if 0 <= block_y and block_y < World.max_y:
+            
+            block = self.map[block_y][block_x % World.max_x]
+            block.draw(y, x)
 
-        return 0
+            return 0
+        
+        return -1
