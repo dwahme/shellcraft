@@ -7,9 +7,10 @@ from threading import Thread
 class Computer:
     CWD = "./computer_files"
     
-    def __init__(self, name):
+    def __init__(self, name, block):
         self.name = name
         self.run_command = "python3"
+        self.block = block
 
         self.process = None
         self.read_thread = None
@@ -62,7 +63,7 @@ class Computer:
                 if out == None:
                     out = ""
 
-                out += line.decode("utf-8")
+                out += line
 
         return out
 

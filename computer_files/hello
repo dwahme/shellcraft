@@ -1,4 +1,4 @@
-print("hello world")
+print("1 hello world")
 
 for _ in range(10):
-    print("hello")
+    print("2 hello")

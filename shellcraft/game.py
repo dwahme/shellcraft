@@ -8,6 +8,7 @@ class Game:
         self.player = player.Player()
         self.world = None
         self.stdscr = None
+        self.computers = []
 
     # Renders the world
     def render(self):
@@ -37,7 +38,7 @@ class Game:
         self.world.generate()
         self.player.y, self.player.x = self.world.spawn()
 
-        comp = computer.Computer("hello")
+        comp = computer.Computer("hello", blocks.Block("COMP", self.stdscr))
 
         while (True):
             c = stdscr.getch()
@@ -50,14 +51,18 @@ class Game:
             self.player.handleMovement(c)
 
             if c == 114: # r
-                comp.read_port(0)
+                comp.run()
             if c == 101: # e
                 comp.editor(self.stdscr)
             else:
                 self.render()
 
+            # if computer or wire block added/deleted
+            for c in self.computers:
+                c.update_ports(self.world)
+
             if comp.process != None:
-                print(comp.read_pipe())
+                print(comp.read_port(2))
 
             self.stdscr.refresh()
             time.sleep(.5)
