@@ -1,4 +1,5 @@
 import shellcraft
 
 if __name__ == "__main__":
-    pass
+    game = shellcraft.Game()
+    game.run()
