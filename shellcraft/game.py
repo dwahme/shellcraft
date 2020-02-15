@@ -9,6 +9,7 @@ class Game:
         self.world = None
         self.stdscr = None
 
+    # Renders the world
     def render(self):
         h, w = self.stdscr.getmaxyx()
 
@@ -49,7 +50,7 @@ class Game:
             self.player.handleMovement(c)
 
             if c == 114: # r
-                comp.run()
+                comp.read_port(0)
             if c == 101: # e
                 comp.editor(self.stdscr)
             else:
