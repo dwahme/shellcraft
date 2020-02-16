@@ -38,6 +38,41 @@ class MType():
         self.blocks = blocklist[blocktype]
     
 
+class ZType():
+    """
+    Special Monster type blocks where text-morphism is crucial
+    """
+    def __init__(self, blocktype):
+        blocklist = {
+            "MONSTERSLIME": [
+                [
+                    Pixel(" ", 15, 40, 241), 
+                    Pixel(" ", 15, 34, 242),
+                    Pixel(" ", 226, 34, 243),
+                    Pixel(" ", 15, 40, 244),
+                    Pixel(" ", 15, 40, 245),
+
+                ], 
+                [
+                    Pixel(" ", 15, 40, 246),
+                    Pixel("o", 0, 40, 247),
+                    Pixel("w", 0, 40, 248),
+                    Pixel("o", 0, 40, 249),
+                    Pixel(" ", 15, 40, 250),
+
+                ],
+                [
+                    Pixel(" ", 15, 28, 251),
+                    Pixel(" ", 15, 28, 252),
+                    Pixel(" ", 15, 40, 253),
+                    Pixel(" ", 15, 40, 254),
+                    Pixel(" ", 15, 34, 255),
+                ]
+            ]
+        }
+        self.blocks = blocklist[blocktype]
+    
+
 class BType(): 
     """
     3 by 3 array of pixels
@@ -516,27 +551,28 @@ class BType():
             ],
             "BEDROCK": [
                 [
-                    Pixel(" ", 16, 233, 151), 
-                    Pixel(" ", 16, 239, 152),
-                    Pixel(" ", 16, 241, 153),
-                    Pixel(" ", 16, 239, 154),
-                    Pixel(" ", 16, 235, 155),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
 
                 ], 
                 [
-                    Pixel(" ", 16, 239, 156),
-                    Pixel(" ", 16, 239, 157),
-                    Pixel(" ", 16, 244, 158),
-                    Pixel(" ", 16, 245, 159),
-                    Pixel(" ", 16, 239, 160),
-
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                   
                 ],
                 [
-                    Pixel(" ", 16, 232, 161),
-                    Pixel(" ", 16, 233, 162),
-                    Pixel(" ", 16, 239, 163),
-                    Pixel(" ", 16, 239, 164),
-                    Pixel(" ", 16, 238, 165),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    Pixel(" ", 16, 245, 7),
+                    
                 ]
             ],
             "ZEROZERO": [
@@ -809,10 +845,12 @@ class Block:
     """
     def __init__(self, blocktype, screen, y, x): 
         self.blocktypestr = blocktype
-        if not ("MONITOR" in blocktype):
-            self.blocktype = BType(blocktype)
-        else:
+        if ("MONITOR" in blocktype):
             self.blocktype = MType(blocktype)
+        elif ("MONSTER" in blocktype):
+            self.blocktype = ZType(blocktype)
+        else:
+            self.blocktype = BType(blocktype)
         self.screen = screen
         self.y = y # Map array Index
         self.x = x # Map array index

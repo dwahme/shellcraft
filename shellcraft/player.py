@@ -58,7 +58,7 @@ class Player:
             '3': "WIRE_LRTB",
             '4': "STONE",
             '5': "SAND", 
-            '6': "MONITORBASIC"
+            '6': "MONITORBASIC",
         }
 
         if (c == ord(' ') and debug):
@@ -123,13 +123,13 @@ class Player:
     # Block placement
     def place_block(self, dir_tuple, world, stdscr, game):
         new_x = (self.x + dir_tuple[1]) % world.max_x
-        b = blocks.Block(self.item, stdscr, self.y + dir_tuple[2], new_x)
-        world.map[self.y + dir_tuple[2]][new_x] = b
+        new_y = self.y + dir_tuple[2]
+        b = blocks.Block(self.item, stdscr, new_y, new_x)
+        world.map[new_y][new_x] = b
 
         if b.blocktypestr == "COMP":
             c = computer.Computer(b)
             game.computers.append(c)
-
             return 1
 
         elif "WIRE" in b.blocktypestr:
@@ -139,6 +139,9 @@ class Player:
 
     def break_block(self, dir_tuple, world, stdscr):
         new_x = (self.x + dir_tuple[1]) % world.max_x
+        if (world.map[self.y + dir_tuple[2]][new_x].blocktypestr == "BEDROCK"):
+            return 
+            
         world.map[self.y + dir_tuple[2]][new_x] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], new_x)
         world.coalesce_water(self.y + dir_tuple[2], new_x)
         world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
