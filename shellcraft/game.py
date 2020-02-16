@@ -96,7 +96,10 @@ class Game:
         # slime = monster.Monster(self.player.y, self.player.x)
         # slime.spawn(self.monsters)
 
+        # i = 0
+
         while (True):
+            # i += 1
             c = stdscr.getch()
 
             # Handle input here
@@ -115,9 +118,10 @@ class Game:
 
             if event == Event.MONITOR_CHANGE:
                 self.monitors = monitor.Monitor.aggregate_monitors(self.monitors)
-                
+
             if event == Event.COMPUTER_CHANGE or event == Event.MONITOR_CHANGE:
-                iomonitors = [io for m in self.monitors for io in m.blocks]
+                iomonitors = [io for m in self.monitors for io in m.generate_iomonitors()]
+                chilog("TOTALIO: {}".format(iomonitors))
 
                 for c in self.computers:
                     c.update_network(self.world, self.computers + iomonitors)

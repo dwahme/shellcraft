@@ -8,7 +8,7 @@ class Monitor:
     def __init__(self, blocks):
         self.blocks = blocks
         self.id = 0
-        self.text = ["hi"]
+        self.text = []
 
 
     def bounds(self):
@@ -24,7 +24,9 @@ class Monitor:
         ios = []
 
         for b in self.blocks:
-            IOMonitor(b, self)
+            ios.append(IOMonitor(b, self))
+
+        chilog("IOS: {}".format(ios))
 
         return ios
 
@@ -161,4 +163,5 @@ class IOMonitor:
         self.parent = parent
 
     def send_port(self, port, data):
-        return monitor.write(data)
+        chilog("IO- sending to parent: " + data)
+        return self.parent.write(data)

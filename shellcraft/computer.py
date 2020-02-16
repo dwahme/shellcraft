@@ -116,8 +116,11 @@ class Computer:
     def broadcast(self, out_port):
         data = self.read_port(out_port)
 
-        for (c, p) in self.port_table[out_port]:
-            c.send_port(p, data)
+        if data != None:
+            chilog("Sending out: " + data)
+
+            for (c, p) in self.port_table[out_port]:
+                c.send_port(p, data)
 
     def broadcast_all(self):
         for port in self.port_table.keys():
@@ -182,10 +185,10 @@ class Computer:
             elif block.blocktypestr == "COMP":
                 found_ports.append((y, x, port))
 
-            elif block.blocktypestr == "MONITOR":
+            elif "MONITOR" in block.blocktypestr:
                 found_ports.append((y, x, port))
 
-
+        chilog("FOUND: {}".format(found_ports))
         return [(Computer.find_computer(computers, y, x), p) for (y, x, p) in found_ports]
 
     # Finds the networks across each port
@@ -197,4 +200,4 @@ class Computer:
         self.port_table[Port.LEFT] = self.__update_network(world, computers, (y, x - 1, Port.RIGHT))
         self.port_table[Port.TOP] = self.__update_network(world, computers, (y - 1, x, Port.BOTTOM))
 
-        
+        chilog("PORTS: {}".format(self.port_table))
