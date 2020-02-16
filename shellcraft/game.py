@@ -2,6 +2,7 @@ import curses
 from . import blocks, computer, monitor, player, world
 import time
 import copy
+import random
 import math
 import os
 from pathlib import Path
@@ -73,7 +74,30 @@ class Game:
         if (bottomblock.blocktypestr == "WATER"):
             if (self.frame_count % 100 == 0):
                 self.player.y += 1
-        
+        if (self.frame_count % 600 == 0):
+            self.grow_weeds_and_grass()
+    
+    def grow_weeds_and_grass(self):
+        # Grab bare dirtgrass blocks 
+        # loop through x: 0-worldmax_x
+        weed_pos = []
+        grass_pos = []
+        for x in range(self.world.max_x):
+            for y in range(3, self.world.ground + 3):
+                block_type = self.world.map[y][x].blocktypestr
+                if (block_type != "AIR"):
+                    if (block_type == "DIRTGRASS"):
+                        if (random.random() < 0.3):
+                            weed_pos.append((y, x))
+                    elif (block_type == "DIRT"):
+                        if (random.random() < 0.2):
+                            grass_pos.append((y, x))
+                    break
+        chilog(str(weed_pos))
+        for weed in weed_pos:
+            self.world.map[weed[0] - 1][weed[1]] = blocks.Block("WEEDS", self.stdscr, weed[0] - 1, weed[1])
+        for grass in grass_pos:
+            self.world.map[grass[0]][grass[1]] = blocks.Block("DIRTGRASS", self.stdscr, grass[0], grass[1])
 
     # The main game loop, use run() instead
     def __main(self, stdscr):
@@ -111,7 +135,7 @@ class Game:
 
             self.stdscr.refresh()
             time.sleep(.01)
-            self.frame_count = (self.frame_count + 1) % 200
+            self.frame_count = (self.frame_count + 1) % 3000
 
     # Actually runs the game
     def run(self):

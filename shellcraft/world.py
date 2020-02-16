@@ -19,29 +19,25 @@ class World:
         random.seed(seed)
 
     def generate(self):
-        # GENERATE CLOUDS 
-
+        
+        # Initial superflat world generation
         tmp = []
         for i in range(World.max_x):
             blk = blocks.Block("CLOUD", self.stdscr, 0, i)
             tmp.append(blk)
-
         self.map.append(tmp)
-
         for j in range(1, World.ground):
             tmp = []
             for i in range(World.max_x):
                 blk = blocks.Block("AIR", self.stdscr, j, i)
                 tmp.append(blk)
             self.map.append(tmp)
-
         for j in range(World.ground, World.ground+World.dirt_depth):
             tmp = []
             for i in range (World.max_x):
                 b = blocks.Block("DIRT", self.stdscr, j, i)
                 tmp.append(b)
             self.map.append(tmp)
-
         for j in range(World.ground+World.dirt_depth, World.max_y - 2):
             tmp = []
             for i in range (World.max_x):
@@ -57,7 +53,6 @@ class World:
 
                 tmp.append(b)
             self.map.append(tmp)
-
         for j in range(World.max_y - 2, World.max_y):
             tmp = []
             for i in range (World.max_x):
@@ -67,7 +62,6 @@ class World:
 
 
         # Lake generation
-       
         lake_x = set()
         checked = set()
         for num_bumps in range(max(1, (World.max_x // 20))):
@@ -86,8 +80,6 @@ class World:
         # Mountain generation
         i = 0
         viable_land = []
-       
-        # below loop works but make more efficient?
         # TODO change so that flatland at x = 0 is well detected
         while (i < World.max_x) :
             j = i
@@ -97,15 +89,13 @@ class World:
                 viable_land.append((j, i)) # i is first non-dirt block
             i += 1
        
-        # Per viable land
-        #f = open("output.txt", "w")
+        # Grabbing viable land for mountain generation
         bottom = min(World.max_y, World.ground+World.dirt_depth+3)
         checked.clear()
         for coords in viable_land :
             len_land = coords[1] - coords[0]
             hilltop_bound = int(2 + ((len_land-0.1) // 8))
             hilltop_count = math.floor(random.random()**1.5 * hilltop_bound)
-            #f.write(str(x[0]) + " " + str(x[1]) + " " + str(hilltop_count) + "\n")
            
            
             hilltops = []
@@ -132,9 +122,7 @@ class World:
                 self.convert_dirt(dy, dx, 0.9, 25, checked)
                 checked.clear()
             
-        # f.close()
-            
-        # Covering with grass
+        # Covering exposed dirt blocks grass
         for i in range(World.max_x) :
             for j in range(World.max_y) :
                 if self.map[j][i].blocktypestr == "AIR" :
@@ -171,6 +159,7 @@ class World:
                 right_ground = right_water
                 prob = prob * prob
         
+        # Cave generation
         self.cave_gen()
         
         # Add bedrock
@@ -180,8 +169,14 @@ class World:
     
     
     ## Helper Functions
-
-
+    
+    '''
+    Recursively creates lake given y and x position
+    Input : y, x    coordinates to make lake
+            prob    probability of lake extending
+            limit   maximum recusion depth
+            checked set of coordinates to skip
+    '''
     def convert_lake(self, y, x, prob, limit, checked) :
         x = x % World.max_x
         if (limit <= 0) :
@@ -206,7 +201,14 @@ class World:
             elif(extra < 0.58 and y > World.ground) :
                 self.convert_lake(y-1, x, prob * dec, limit-1, checked)
         return
-
+    
+    '''
+    Recursively creates hill given y and x position of hilltop
+    Input : target_y, target_x          coordinates of hilltop
+            left_limit, right_limit     x coordinates of limit of the base of the hill
+            current_y                   the current y coordiate to create hill, stops when current_y == target_y
+            max_height                  maximum height defined by the size of base land, determines slope
+    '''
     def make_hill(self, target_y, target_x, left_limit, right_limit, current_y, max_height) :
         step = current_y - target_y
         if (step <= 0) :
@@ -230,6 +232,13 @@ class World:
             self.map[current_y][i] = blocks.Block("DIRT", self.stdscr, current_y, i)
         self.make_hill(target_y, target_x, left, right, current_y-1, max_height)
     
+    '''
+    Recursively creates deviations in dirt-stone boundary given y and x position
+    Input : y, x    coordinates to make dirt patches
+            prob    probability of dirt patch extending
+            limit   maximum recusion depth
+            checked set of coordinates to skip
+    '''
     def convert_dirt(self, y, x, prob, limit, checked) :
         x = x % World.max_x
         if (limit <= 0) :
@@ -251,7 +260,9 @@ class World:
         return
         
         
-    
+    '''
+    Recursively creates caves
+    '''
     def cave_gen(self) :
         cave_num = World.max_x // 30
         cave_num = random.randint(round(cave_num * 0.6), round(cave_num * 1.4))
@@ -263,7 +274,14 @@ class World:
             y = random.randrange(World.max_y - World.cave_depth, World.max_y-2)
             self.cave_dig(y, x, prob, limit, checked)
             checked.clear()
-            
+    
+    '''
+    Recursively creates a single cave system
+    Input : y, x    coordinates to dig caves
+            prob    probability of cave extending
+            limit   maximum recusion depth
+            checked set of coordinates to skip
+    '''
     def cave_dig(self, y, x, prob, limit, checked) :
         x = x % World.max_x
         if (limit <= 0) :
@@ -281,8 +299,6 @@ class World:
         self.map[y][(x+1) % World.max_x] = blocks.Block("AIR", self.stdscr, y, (x+1) % World.max_x)
         if (random.random() < prob) :
             dec = 0.9
-            #self.cave_dig(y,x-1, prob * dec, limit-1, checked)
-            #self.cave_dig(y, x+1, prob * dec, limit-1, checked)
             self.cave_dig(y, x-2, prob * dec, limit-1, checked)
             self.cave_dig(y, x+2, prob * dec, limit-1, checked)
             extra = random.uniform(0.5, 1)
