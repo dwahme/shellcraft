@@ -1,5 +1,5 @@
 import curses
-from . import game 
+from .utils.chilog import chilog
 from enum import Enum
 from queue import Queue, Empty
 from subprocess import Popen, run, PIPE
@@ -115,7 +115,7 @@ class Computer:
 
             y, x, port = queue.get()
 
-            # game.chilog("{} {}".format(y, x))
+            chilog("{} {}\n".format(y, x))
             
             block = world.map[y][x]
 
@@ -146,7 +146,7 @@ class Computer:
     # Finds the networks across each port
     def update_network(self, world, computers):
         y, x = self.block.coords()
-        game.chilog("update net {} {}".format(y, x))
+        chilog("update net {} {}".format(y, x))
 
         port_table[Port.RIGHT] = self.__update_network(world, computers, (y, x + 1, Port.LEFT))
         port_table[Port.BOTTOM] = self.__update_network(world, computers, (y + 1, x, Port.TOP))

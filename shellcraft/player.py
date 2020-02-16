@@ -1,5 +1,5 @@
 from .enums.direction import Direction
-from . import blocks
+from . import blocks, computer
 from .utils.chilog import chilog
 
 class Player:
@@ -14,8 +14,7 @@ class Player:
     def coords(self):
         return self.y, self.x
 
-    def handle_player_move(self, c, world, stdscr):
-        chilog('1')
+    def handle_player_move(self, c, world, stdscr, game):
         """
         PLAYER CONTROLS:
 
@@ -63,28 +62,28 @@ class Player:
         elif (c == ord('l')): #Place block right
             if (self.action == "PLACE"):
                 if (self.place_legal(Direction.RIGHT, world)):
-                    self.place_block(Direction.RIGHT, world, stdscr)
+                    self.place_block(Direction.RIGHT, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(Direction.RIGHT, world, stdscr)
 
         elif (c == ord('j')): #Place block right
             if (self.action == "PLACE"):
                 if (self.place_legal(Direction.LEFT, world)):
-                    self.place_block(Direction.LEFT, world, stdscr)
+                    self.place_block(Direction.LEFT, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(Direction.LEFT, world, stdscr)
 
         elif (c == ord('i')): #Place block right
             if (self.action == "PLACE"):
                 if (self.place_legal(Direction.TOP, world)):
-                    self.place_block(Direction.TOP, world, stdscr)
+                    self.place_block(Direction.TOP, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(Direction.TOP, world, stdscr)
 
         elif (c == ord('k')): #Place block right
             if (self.action == "PLACE"):
                 if (self.place_legal(Direction.BOTTOM, world)):
-                    self.place_block(Direction.BOTTOM, world, stdscr)
+                    self.place_block(Direction.BOTTOM, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(Direction.BOTTOM, world, stdscr)
 
@@ -135,15 +134,25 @@ class Player:
         else:
             return False 
 
-    def place_block(self, dir, world, stdscr):
+    def place_block(self, dir, world, stdscr, game):
+        b = None
         if (dir == Direction.LEFT):
-            world.map[self.y][self.x - 1] = blocks.Block(self.item, stdscr, self.y, self.x - 1)
+            b = blocks.Block(self.item, stdscr, self.y, self.x - 1)
+            world.map[self.y][self.x - 1] = b
         elif (dir == Direction.BOTTOM): 
-            world.map[self.y + 1][self.x] = blocks.Block(self.item, stdscr, self.y + 1, self.x)
+            b = blocks.Block(self.item, stdscr, self.y + 1, self.x)
+            world.map[self.y + 1][self.x] = b
         elif (dir == Direction.RIGHT): 
-            world.map[self.y][self.x + 1] = blocks.Block(self.item, stdscr, self.y, self.x + 1)
+            b = blocks.Block(self.item, stdscr, self.y, self.x + 1)
+            world.map[self.y][self.x + 1] = b
         elif (dir == Direction.TOP):
-            world.map[self.y - 1][self.x] = blocks.Block(self.item, stdscr, self.y - 1, self.x)
+            b = blocks.Block(self.item, stdscr, self.y - 1, self.x)
+            world.map[self.y - 1][self.x] = b
+
+        if b.blocktypestr == "COMP":
+            chilog("{}".format(b.coords()))
+            c = computer.Computer(str(len(game.computers)), b)
+            game.computers.append(c)
 
     def break_block(self, dir, world, stdscr):
         if (dir == Direction.LEFT):
