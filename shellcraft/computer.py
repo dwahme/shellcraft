@@ -148,9 +148,9 @@ class Computer:
         y, x = self.block.coords()
         chilog("update net {} {}".format(y, x))
 
-        port_table[Port.RIGHT] = self.__update_network(world, computers, (y, x + 1, Port.LEFT))
-        port_table[Port.BOTTOM] = self.__update_network(world, computers, (y + 1, x, Port.TOP))
-        port_table[Port.LEFT] = self.__update_network(world, computers, (y, x - 1, Port.RIGHT))
-        port_table[Port.TOP] = self.__update_network(world, computers, (y - 1, x, Port.BOTTOM))
+        self.port_table[Port.RIGHT] = self.__update_network(world, computers, (y, x + 1, Port.LEFT))
+        self.port_table[Port.BOTTOM] = self.__update_network(world, computers, (y + 1, x, Port.TOP))
+        self.port_table[Port.LEFT] = self.__update_network(world, computers, (y, x - 1, Port.RIGHT))
+        self.port_table[Port.TOP] = self.__update_network(world, computers, (y - 1, x, Port.BOTTOM))
 
         
