@@ -135,6 +135,12 @@ class Player:
 
             return Event.COMPUTER_CHANGE
 
+        elif b.blocktypestr == "PI":
+            c = computer.Pi(b)
+            game.pis.append(c)
+
+            return Event.COMPUTER_CHANGE
+
         elif "WIRE" in b.blocktypestr:
             return Event.COMPUTER_CHANGE
 

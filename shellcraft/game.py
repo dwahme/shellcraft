@@ -1,5 +1,5 @@
 import curses
-from . import blocks, computer, monster, player, world
+from . import blocks, computer, monitor, player, world
 import time
 import copy
 import math
@@ -16,6 +16,7 @@ class Game:
         self.world = None
         self.stdscr = None
         self.computers = []
+        self.pis = []
         self.frame_count = 0
         # self.monsters = []
         self.monitors = []
@@ -71,14 +72,6 @@ class Game:
         if (bottomblock.blocktypestr == "WATER"):
             if (self.frame_count % 100 == 0):
                 self.player.y += 1
-
-    # def render_monsters(self):
-    #     for monster in self.monsters:
-    #         monster.draw(self.stdscr, monster.y, monster.x)
-    #         if (self.player.x > monster.x):
-    #             monster.move(Direction.LEFT)
-    #         else:
-    #             monster.move(Direction.RIGHT)
         
 
     # The main game loop, use run() instead
@@ -92,28 +85,15 @@ class Game:
         self.world = world.World(self.stdscr)
         self.world.generate()
         self.player.y, self.player.x = self.world.spawn()
-        
-        # slime = monster.Monster(self.player.y, self.player.x)
-        # slime.spawn(self.monsters)
-
-        # i = 0
 
         while (True):
-            # i += 1
             c = stdscr.getch()
-
-            # Handle input here
-            # TODO- yves: based upon the character that's inputted, do update player y/x
-            # or get some other input here and handle
-            # preferably some dispatch function?
-            # NOTE THAT PLAYER Y VALUE DOES NOT WRAP (BUT X DOES)
-
+            
             event = self.player.handle_player_move(c, self.world, self.stdscr, self)
 
             self.render_world()
             self.render_player()
             self.render_physics()
-            # self.render_monsters()
 
 
             if event == Event.MONITOR_CHANGE:
@@ -124,9 +104,9 @@ class Game:
                 chilog("TOTALIO: {}".format(iomonitors))
 
                 for c in self.computers:
-                    c.update_network(self.world, self.computers + iomonitors)
+                    c.update_network(self.world, self.computers + self.pis + iomonitors)
 
-            for c in self.computers:
+            for c in self.computers + self.pis:
                 c.broadcast_all()
 
             self.stdscr.refresh()

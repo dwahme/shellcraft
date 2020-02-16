@@ -201,3 +201,34 @@ class Computer:
         self.port_table[Port.TOP] = self.__update_network(world, computers, (y - 1, x, Port.BOTTOM))
 
         chilog("PORTS: {}".format(self.port_table))
+
+
+class Pi(Computer):
+
+    def __init__(self, block):
+        super().__init__(block)
+
+        self.out_ports = [Queue()]
+
+    # Queues output from a process to be read later
+    def enqueue_output(self, out, queues):
+        for line in iter(out.readline, b''):
+            output = line.decode("utf-8")
+
+            queue = queues[0]
+            queue.put(output)
+
+        out.close()
+
+
+    # Runs a computer's file and starts queueing its output into self.out_queue
+    def run(self):
+        # Start the process to run the computer's program
+        self.process = Popen(self.runtime, cwd=Computer.CWD, 
+                             stdout=PIPE, stdin=PIPE)
+
+        # Begin queueing the output
+        self.read_thread = Thread(target=self.enqueue_output, 
+                                  args=(self.process.stdout, self.out_ports))
+        self.read_thread.daemon = True # thread dies with the program
+        self.read_thread.start()
