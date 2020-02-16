@@ -32,8 +32,6 @@ class Game:
         playerblock = blocks.Block("PLAYER", self.stdscr, self.player.y, self.player.x)
         playerblock.draw(self.roundbase(h // 2, 3), self.roundbase(w, 10) // 2) # magic, dont touch
 
-    
-
     # The main game loop, use run() instead
     def __main(self, stdscr):
         self.stdscr = stdscr
