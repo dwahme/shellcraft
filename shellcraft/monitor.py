@@ -1,3 +1,4 @@
+from curses.textpad import rectangle
 from operator import attrgetter
 from queue import Queue, Empty
 from .utils.chilog import chilog
@@ -7,7 +8,7 @@ class Monitor:
     def __init__(self, blocks):
         self.blocks = blocks
         self.id = 0
-        self.text = ""
+        self.text = ["hi"]
 
 
     def bounds(self):
@@ -29,14 +30,45 @@ class Monitor:
     def is_rectangle(self):
         return self.num_blocks() == len(self.blocks)
 
+    def box_bounds(self):
+        min_y, max_y, min_x, max_x = self.bounds()
+        top, bot = 0, (max_y - min_y + 1) * 3 - 1
+        left, right = 0, (max_x - min_x + 1) * 5 - 1
+
+        return top, left, bot, right
+
+    def write(self, txt):
+        top, left, bot, right = self.box_bounds()
+        
+        lines = txt.split("\n")
+
+        for line in lines:
+            sublines = [line[i:i + (right - 2)] for i in range(0, len(line), (right - 2))]
+            for sub in sublines:
+                self.text.append(sub)
+            
+        self.text = self.text[-(bot - 2):-1]
+
+
     def render(self, stdscr, y, x):
         if self.is_rectangle():
 
-            min_y, max_y, min_x, max_x = self.bounds()
+            top, left, bot, right = self.box_bounds()
 
-            for j in range(0, (max_y - min_y + 1) * 3):
-                for i in range(0, (max_x - min_x + 1) * 5):
-                    stdscr.addstr(y + j, x + i, str(self.id) * 5)
+
+            # for j in range(1, bot - 1):
+            #     for i in range(1, right - 1):
+            #         stdscr.addstr(y + j, x + i, str(self.id) * 4)
+            for j in range(1, bot):
+                s = " " * (right - 1)
+
+                if len(self.text) >= j:
+                    t = self.text[j - 1]
+                    s = t + s[len(t):]
+                
+                stdscr.addstr(y + j, x + 1, s)
+
+            rectangle(stdscr, top + y, left + x, bot + y, right + x)
 
             return True
         
