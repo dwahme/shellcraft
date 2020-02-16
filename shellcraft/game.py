@@ -46,7 +46,7 @@ class Game:
         """
         y, x: index of block
         """
-        return self.world.map[y][x % self.world.max_x] # wraping
+        return self.world.map[y][x % self.world.max_x] # wrapping
 
     # The main game loop, use run() instead
     def __main(self, stdscr):
@@ -60,8 +60,6 @@ class Game:
         self.world.generate()
         self.player.y, self.player.x = self.world.spawn()
 
-        comp = computer.Computer("1", blocks.Block("COMP", self.stdscr, 15, 250))
-
         while (True):
             c = stdscr.getch()
 
@@ -71,26 +69,19 @@ class Game:
             # preferably some dispatch function?
             # NOTE THAT PLAYER Y VALUE DOES NOT WRAP (BUT X DOES)
 
+            # chilog("{}".format(self.player.coords()))
+
             self.handle_player_move(c)
 
-            
-            if c == 114: # r
-                comp.run()
-            if c == 101: # e
-                comp.editor(self.stdscr)
-            else:
-                self.render_world()
-                self.render_player()
+            self.render_world()
+            self.render_player()
 
             # if computer or wire block added/deleted
             for c in self.computers:
                 c.update_network(self.world, self.computers)
 
-            for c in self.computers:
-                c.broadcast_all()
-
-            if comp.process != None:
-                print(comp.read_port(2))
+            # for c in self.computers:
+            #     c.broadcast_all()
 
             self.stdscr.refresh()
             time.sleep(.01)
@@ -256,16 +247,40 @@ class Game:
 
     # Block placement functionality 
     def place_block_right(self): 
-        self.world.map[self.player.y][self.player.x + 1] = blocks.Block(self.player.item, self.stdscr, self.player.y, self.player.x + 1)
+        b = blocks.Block(self.player.item, self.stdscr, self.player.y, self.player.x + 1)
+        chilog("block coords = {}".format(b.coords()))
+        self.world.map[self.player.y][self.player.x + 1] = b
+        if self.player.item == "COMP":
+            c = computer.Computer(str(len(self.computers)), b)
+            self.computers.append(c)
+            c.editor(self.stdscr)
 
     def place_block_left(self): 
-        self.world.map[self.player.y][self.player.x - 1] = blocks.Block(self.player.item, self.stdscr, self.player.y, self.player.x - 1)
+        b = blocks.Block(self.player.item, self.stdscr, self.player.y, self.player.x - 1)
+        chilog("block coords = {}".format(b.coords()))
+        self.world.map[self.player.y][self.player.x - 1] = b
+        if self.player.item == "COMP":
+            c = computer.Computer(str(len(self.computers)), b)
+            self.computers.append(c)
+            c.editor(self.stdscr)
 
     def place_block_up(self): 
-        self.world.map[self.player.y - 1][self.player.x] = blocks.Block(self.player.item, self.stdscr, self.player.y - 1, self.player.x)
+        b = blocks.Block(self.player.item, self.stdscr, self.player.y - 1, self.player.x)
+        chilog("block coords = {}".format(b.coords()))
+        self.world.map[self.player.y - 1][self.player.x] = b
+        if self.player.item == "COMP":
+            c = computer.Computer(str(len(self.computers)), b)
+            self.computers.append(c)
+            c.editor(self.stdscr)
 
     def place_block_down(self): 
-        self.world.map[self.player.y + 1][self.player.x] = blocks.Block(self.player.item, self.stdscr, self.player.y + 1, self.player.x)
+        b = blocks.Block(self.player.item, self.stdscr, self.player.y + 1, self.player.x)
+        chilog("block coords = {}".format(b.coords()))
+        self.world.map[self.player.y + 1][self.player.x] = b
+        if self.player.item == "COMP":
+            c = computer.Computer(str(len(self.computers)), b)
+            self.computers.append(c)
+            c.editor(self.stdscr)
 
 
     # Block deletion functionality 
@@ -283,6 +298,6 @@ class Game:
     
 
 def chilog(msg):
-    f = open("debug.txt", "w")
+    f = open("debug.txt", "a+")
     f.write(msg)
     f.close()

@@ -1,4 +1,5 @@
 import curses
+from . import game 
 from enum import Enum
 from queue import Queue, Empty
 from subprocess import Popen, run, PIPE
@@ -100,18 +101,23 @@ class Computer:
         return None
 
     # Performs BFS across wires given a starting point and adds computers to queue
-    def __update_network(self, computers, world, start):
+    def __update_network(self, world, computers, start):
         queue = Queue()
         queue.put(start)
 
-        checked = { block.coords(), start }
+        y, x, _ = start
+
+        checked = { self.block.coords(), (y, x) }
 
         found_ports = []
         
         while not queue.empty():
 
             y, x, port = queue.get()
-            block = world[y][x]
+
+            # game.chilog("{} {}".format(y, x))
+            
+            block = world.map[y][x]
 
             if "WIRE" in block.blocktypestr:
                 dirs = block.blocktypestr.split("_")
@@ -140,10 +146,11 @@ class Computer:
     # Finds the networks across each port
     def update_network(self, world, computers):
         y, x = self.block.coords()
+        game.chilog("update net {} {}".format(y, x))
 
-        port_table[Port.RIGHT] = __update_network(world, computers, (y, x + 1, Port.LEFT))
-        port_table[Port.BOTTOM] = __update_network(world, computers, (y + 1, x, Port.TOP))
-        port_table[Port.LEFT] = __update_network(world, computers, (y, x - 1, Port.RIGHT))
-        port_table[Port.TOP] = __update_network(world, computers, (y - 1, x, Port.BOTTOM))
+        port_table[Port.RIGHT] = self.__update_network(world, computers, (y, x + 1, Port.LEFT))
+        port_table[Port.BOTTOM] = self.__update_network(world, computers, (y + 1, x, Port.TOP))
+        port_table[Port.LEFT] = self.__update_network(world, computers, (y, x - 1, Port.RIGHT))
+        port_table[Port.TOP] = self.__update_network(world, computers, (y - 1, x, Port.BOTTOM))
 
         
