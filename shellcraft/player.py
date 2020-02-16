@@ -60,7 +60,8 @@ class Player:
             '4': "STONE",
             '5': "SAND", 
             '6': "MONITORBASIC",
-            '7': "TNT"
+            '7': "TNT",
+            '8': "PI"
         }
 
         if (c == ord(' ') and debug):
