@@ -59,7 +59,7 @@ class Player:
             '3': "WIRE_LRTB",
             '4': "STONE",
             '5': "SAND", 
-            '6': "MONITORBASIC"
+            '6': "MONITORBASIC",
         }
 
         if (c == ord(' ') and debug):
@@ -120,10 +120,13 @@ class Player:
         else:
             return False 
 
+            
+    # Block placement
     def place_block(self, dir_tuple, world, stdscr, game):
         new_x = (self.x + dir_tuple[1]) % world.max_x
-        b = blocks.Block(self.item, stdscr, self.y + dir_tuple[2], new_x)
-        world.map[self.y + dir_tuple[2]][new_x] = b
+        new_y = self.y + dir_tuple[2]
+        b = blocks.Block(self.item, stdscr, new_y, new_x)
+        world.map[new_y][new_x] = b
 
         if b.blocktypestr == "COMP":
             c = computer.Computer(b)
@@ -145,6 +148,9 @@ class Player:
     def break_block(self, dir_tuple, world, stdscr):
         new_y = self.y + dir_tuple[2]
         new_x = (self.x + dir_tuple[1]) % world.max_x
+
+        if (world.map[self.y + dir_tuple[2]][new_x].blocktypestr == "BEDROCK"):
+            return Event.NO_CHANGE
         b_type = world.get_block_from_pos(new_y, new_x).blocktypestr
 
         world.map[new_y][new_x] = blocks.Block("AIR", stdscr, new_y, new_x)
