@@ -181,27 +181,27 @@ class BType():
             ],
             "AIR": [
                 [
-                    Pixel("", 16, 0, 106), 
-                    Pixel("", 16, 0, 107),
-                    Pixel("", 16, 0, 108),
-                    Pixel("", 16, 0, 109),
-                    Pixel("", 16, 0, 110),
+                    Pixel(" ", 16, 0, 106), 
+                    Pixel(" ", 16, 0, 107),
+                    Pixel(" ", 16, 0, 108),
+                    Pixel(" ", 16, 0, 109),
+                    Pixel(" ", 16, 0, 110),
 
                 ], 
                 [
-                    Pixel("", 16, 253, 111),
-                    Pixel("", 16, 245, 112),
-                    Pixel("", 16, 245, 113),
-                    Pixel("", 16, 245, 114),
-                    Pixel("", 16, 253, 115),
+                    Pixel(" ", 16, 0, 111),
+                    Pixel(" ", 16, 0, 112),
+                    Pixel(" ", 16, 0, 113),
+                    Pixel(" ", 16, 0, 114),
+                    Pixel(" ", 16, 0, 115),
 
                 ],
                 [
-                    Pixel("", 16, 253, 116),
-                    Pixel("", 16, 253, 117),
-                    Pixel("", 16, 253, 118),
-                    Pixel("", 16, 253, 119),
-                    Pixel("", 16, 253, 120),
+                    Pixel(" ", 16, 0, 116),
+                    Pixel(" ", 16, 0, 117),
+                    Pixel(" ", 16, 0, 118),
+                    Pixel(" ", 16, 0, 119),
+                    Pixel(" ", 16, 0, 120),
                 ]
             ],
             "WIRE_LR" : [
@@ -484,6 +484,31 @@ class BType():
                 [
                     Pixel(" ", 16, 212, 136), 
                     Pixel(" ", 16, 212, 137),
+                    Pixel("^", 16, 212, 138),
+                    Pixel(" ", 16, 212, 139),
+                    Pixel(" ", 16, 212, 140),
+
+                ], 
+                [
+                    Pixel(" ", 16, 212, 141),
+                    Pixel("<", 16, 212, 142),
+                    Pixel("P", 16, 212, 143),
+                    Pixel(">", 16, 212, 144),
+                    Pixel(" ", 16, 212, 145),
+
+                ],
+                [
+                    Pixel(" ", 16, 212, 146),
+                    Pixel(" ", 16, 212, 147),
+                    Pixel("v", 16, 212, 148),
+                    Pixel(" ", 16, 212, 149),
+                    Pixel(" ", 16, 212, 150),
+                ]
+            ],
+            "ZEROZERO": [
+                [
+                    Pixel(" ", 16, 212, 136), 
+                    Pixel(" ", 16, 212, 137),
                     Pixel(" ", 16, 212, 138),
                     Pixel(" ", 16, 212, 139),
                     Pixel(" ", 16, 212, 140),
@@ -491,9 +516,59 @@ class BType():
                 ], 
                 [
                     Pixel(" ", 16, 212, 141),
-                    Pixel("u", 16, 212, 142),
-                    Pixel("w", 16, 212, 143),
-                    Pixel("u", 16, 212, 144),
+                    Pixel("0", 16, 212, 142),
+                    Pixel(",", 16, 212, 143),
+                    Pixel("0", 16, 212, 144),
+                    Pixel(" ", 16, 212, 145),
+
+                ],
+                [
+                    Pixel(" ", 16, 212, 146),
+                    Pixel(" ", 16, 212, 147),
+                    Pixel(" ", 16, 212, 148),
+                    Pixel(" ", 16, 212, 149),
+                    Pixel(" ", 16, 212, 150),
+                ]
+            ],
+            "ZEROONE": [
+                [
+                    Pixel(" ", 16, 212, 136), 
+                    Pixel(" ", 16, 212, 137),
+                    Pixel(" ", 16, 212, 138),
+                    Pixel(" ", 16, 212, 139),
+                    Pixel(" ", 16, 212, 140),
+
+                ], 
+                [
+                    Pixel(" ", 16, 212, 141),
+                    Pixel("0", 16, 212, 142),
+                    Pixel(",", 16, 212, 143),
+                    Pixel("1", 16, 212, 144),
+                    Pixel(" ", 16, 212, 145),
+
+                ],
+                [
+                    Pixel(" ", 16, 212, 146),
+                    Pixel(" ", 16, 212, 147),
+                    Pixel(" ", 16, 212, 148),
+                    Pixel(" ", 16, 212, 149),
+                    Pixel(" ", 16, 212, 150),
+                ]
+            ],
+            "ONEZERO": [
+                [
+                    Pixel(" ", 16, 212, 136), 
+                    Pixel(" ", 16, 212, 137),
+                    Pixel(" ", 16, 212, 138),
+                    Pixel(" ", 16, 212, 139),
+                    Pixel(" ", 16, 212, 140),
+
+                ], 
+                [
+                    Pixel(" ", 16, 212, 141),
+                    Pixel("1", 16, 212, 142),
+                    Pixel(",", 16, 212, 143),
+                    Pixel("0", 16, 212, 144),
                     Pixel(" ", 16, 212, 145),
 
                 ],
@@ -523,10 +598,12 @@ class Block:
     b = Block("STONE", self.stdscr)
 
     """
-    def __init__(self, blocktype, screen): 
+    def __init__(self, blocktype, screen, locY, locX): 
         self.blocktypestr = blocktype
         self.blocktype = BType(blocktype)
         self.screen = screen
+        self.locY = locY
+        self.locX = locX
 
     def draw(self, locY, locX):
         """
@@ -536,9 +613,11 @@ class Block:
         """
         # print('=========' )
         # curses.init_pair(9, curses.COLOR_RED, curses.COLOR_WHITE)
+        self.locY = locY
+        self.locX = locX
         for i in range(3):
             for j in range(5):
-                self.screen.addstr(locY + i, locX + j, self.blocktype.blocks[i][j].char, self.blocktype.blocks[i][j].colorpair)
+                self.screen.addstr(self.locY + i, self.locX + j, self.blocktype.blocks[i][j].char, self.blocktype.blocks[i][j].colorpair)
         
     def type(self):
         return self.blocktypestr
