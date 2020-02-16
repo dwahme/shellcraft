@@ -15,6 +15,7 @@ class Port(IntEnum):
 
 class Computer:
     CWD = "./computer_files"
+    EDITOR = "vim"
     
     def __init__(self, block):
         self.name = None
@@ -74,9 +75,9 @@ class Computer:
         out.close()
 
     # Opens up a text editor for a given computer
-    def editor(self, stdscr, editor="vim"):
+    def editor(self, stdscr):
         curses.endwin()
-        run([editor, "{}".format(self.name)], cwd=Computer.CWD)
+        run([Computer.EDITOR, "{}".format(self.name)], cwd=Computer.CWD)
         stdscr.refresh()
         curses.curs_set(0)
 

@@ -1,4 +1,0 @@
-print("1 hello world")
-
-for _ in range(10):
-    print("2 hello")
