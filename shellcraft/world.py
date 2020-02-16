@@ -2,6 +2,7 @@ from . import blocks
 import math
 import random
 import time
+from .utils.chilog import chilog
 
 class World:
 
@@ -42,7 +43,16 @@ class World:
         for j in range(World.ground+World.dirt_depth, World.max_y):
             tmp = []
             for i in range (World.max_x):
+                # If j is large, slightly increase threshold
+                threshold = 0.001
+                threshold += (j / World.max_y) * 0.001
+                rand = random.random()
+
                 b = blocks.Block("STONE", self.stdscr, j, i)
+                if (rand < threshold): 
+                    chilog("Diamond: " + str(threshold) + " > " + str(rand) + "\n")
+                    b = blocks.Block("DIAMOND", self.stdscr, j, i)
+
                 tmp.append(b)
             self.map.append(tmp)
 
