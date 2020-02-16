@@ -9,7 +9,7 @@ class Player:
         self.x = 0
         self.item = "DIRT"
         self.originalBlockType = "AIR"
-        self.action = "PLACE"
+        self.action = "NORMAL"
         self.health = 3
 
     def coords(self):
@@ -58,6 +58,7 @@ class Player:
             '3': "WIRE_LRTB",
             '4': "STONE",
             '5': "SAND", 
+            '6': "MONITORBASIC"
         }
 
         if (c == ord(' ') and debug):
@@ -91,7 +92,7 @@ class Player:
                 self.interact_block(dir_tuple, world, stdscr, game.computers)
 
         # Inventory 
-        elif (c == ord('1') or c == ord('2') or c == ord('3') or c == ord('4')):
+        elif (c in [ord(n) for n in items.keys()]):
             self.item = items[chr(c)]
 
         return ret

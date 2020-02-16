@@ -3,6 +3,40 @@ import sys
 from enum import Enum 
 from . pixel import Pixel
 
+class MType():
+    """
+    Special Monitor type blocks where text-morphism is crucial
+    """
+    def __init__(self, blocktype):
+        blocklist = {
+            "MONITORBASIC": [
+                [
+                    Pixel(" ", 15, 0, 301), 
+                    Pixel(" ", 15, 0, 302),
+                    Pixel(" ", 15, 0, 303),
+                    Pixel(" ", 15, 0, 304),
+                    Pixel(" ", 15, 0, 305),
+
+                ], 
+                [
+                    Pixel(" ", 15, 0, 306),
+                    Pixel(" ", 15, 0, 307),
+                    Pixel(" ", 15, 0, 308),
+                    Pixel(" ", 15, 0, 309),
+                    Pixel(" ", 15, 0, 310),
+
+                ],
+                [
+                    Pixel(" ", 15, 0, 311),
+                    Pixel(" ", 15, 0, 312),
+                    Pixel(" ", 15, 0, 313),
+                    Pixel(" ", 15, 0, 314),
+                    Pixel(" ", 15, 0, 315),
+                ]
+            ]
+        }
+        self.blocks = blocklist[blocktype]
+    
 
 class BType(): 
     """
@@ -480,31 +514,6 @@ class BType():
                 Pixel("<", 255, 0, 123),
                 ]
             ],
-            "PLAYER": [
-                [
-                    Pixel("^", 16, 212, 136), 
-                    Pixel(" ", 16, 212, 137),
-                    Pixel(" ", 16, 212, 138),
-                    Pixel(" ", 16, 212, 139),
-                    Pixel("^", 16, 212, 140),
-
-                ], 
-                [
-                    Pixel(" ", 16, 212, 141),
-                    Pixel("u", 16, 212, 142),
-                    Pixel("w", 16, 212, 143),
-                    Pixel("u", 16, 212, 144),
-                    Pixel(" ", 16, 212, 145),
-
-                ],
-                [
-                    Pixel(" ", 16, 212, 146),
-                    Pixel(" ", 16, 212, 147),
-                    Pixel(" ", 16, 212, 148),
-                    Pixel(" ", 16, 212, 149),
-                    Pixel(" ", 16, 212, 150),
-                ]
-            ],
             "BEDROCK": [
                 [
                     Pixel(" ", 16, 233, 151), 
@@ -630,6 +639,131 @@ class BType():
                     Pixel(" ", 16, 88, 165),
                 ]
             ],
+            "PLAYERNORMAL": [
+                [
+                    Pixel("^", 16, 212, 136), 
+                    Pixel(" ", 16, 0, 137),
+                    Pixel(" ", 16, 0 , 138),
+                    Pixel(" ", 16, 0, 139),
+                    Pixel("^", 16, 212, 140),
+
+                ], 
+                [
+                    Pixel("u", 16, 212, 141),
+                    Pixel(" ", 16, 212, 142),
+                    Pixel("w", 16, 212, 143),
+                    Pixel(" ", 16, 212, 144),
+                    Pixel("u", 16, 212, 145),
+
+                ],
+                [
+                    Pixel(" ", 16, 212, 146),
+                    Pixel(" ", 16, 212, 147),
+                    Pixel(" ", 16, 212, 148),
+                    Pixel(" ", 16, 212, 149),
+                    Pixel(" ", 16, 212, 150),
+                ]
+            ],
+            "PLAYERPLACE": [
+                [
+                    Pixel("^", 16, 212, 166), 
+                    Pixel(" ", 16, 0, 167),
+                    Pixel("P", 16, 34, 168),
+                    Pixel(" ", 16, 0, 169),
+                    Pixel("^", 16, 212, 170),
+
+                ], 
+                [ 
+                    Pixel("u", 16, 212, 171),
+                    Pixel(" ", 16, 212, 172),
+                    Pixel("w", 16, 212, 173),
+                    Pixel(" ", 16, 212, 174),
+                    Pixel("u", 16, 212, 175),
+
+                ],
+                [
+                    Pixel(" ", 16, 212, 176),
+                    Pixel(" ", 16, 212, 177),
+                    Pixel(" ", 16, 212, 178),
+                    Pixel(" ", 16, 212, 179),
+                    Pixel(" ", 16, 212, 180),
+                ]
+            ],
+            "PLAYERINTERACT": [
+                [
+                    Pixel("^", 16, 212, 181), 
+                    Pixel(" ", 16, 0, 182),
+                    Pixel("I", 15, 21, 183),
+                    Pixel(" ", 16, 0, 184),
+                    Pixel("^", 16, 212, 185),
+
+                ], 
+                [
+                    Pixel("u", 16, 212, 186),
+                    Pixel(" ", 16, 212, 187),
+                    Pixel("w", 16, 212, 188),
+                    Pixel(" ", 16, 212, 189),
+                    Pixel("u", 16, 212, 190),
+
+                ],
+                [
+                    Pixel(" ", 16, 212, 191),
+                    Pixel(" ", 16, 212, 192),
+                    Pixel(" ", 16, 212, 193),
+                    Pixel(" ", 16, 212, 194),
+                    Pixel(" ", 16, 212, 195),
+                ]
+            ],
+            "PLAYERBREAK": [
+                [
+                    Pixel("^", 16, 212, 196), 
+                    Pixel(" ", 16, 0, 197),
+                    Pixel("B", 15, 197, 198),
+                    Pixel(" ", 16, 0, 199),
+                    Pixel("^", 16, 212, 200),
+
+                ], 
+                [
+                    Pixel("u", 16, 212, 201),
+                    Pixel(" ", 16, 212, 202),
+                    Pixel("w", 16, 212, 203),
+                    Pixel(" ", 16, 212, 204),
+                    Pixel("u", 16, 212, 205),
+
+                ],
+                [
+                    Pixel(" ", 16, 212, 206),
+                    Pixel(" ", 16, 212, 207),
+                    Pixel(" ", 16, 212, 208),
+                    Pixel(" ", 16, 212, 209),
+                    Pixel(" ", 16, 212, 210),
+                ]
+            ],
+            "COMPON": [
+                [
+                    Pixel("-", 16, 253, 211), 
+                    Pixel("-", 16, 253, 212),
+                    Pixel("-", 16, 253, 213),
+                    Pixel("-", 16, 253, 214),
+                    Pixel("-", 16, 253, 215),
+
+                ], 
+                [
+                    Pixel("¦", 16, 253, 216),
+                    Pixel("'", 16, 40, 217),
+                    Pixel("v", 16, 40, 218),
+                    Pixel("'", 16, 40, 219),
+                    Pixel("¦", 16, 253, 220),
+
+                ],
+                [
+                    Pixel("-", 16, 253, 221),
+                    Pixel("-", 16, 253, 222),
+                    Pixel("-", 16, 253, 223),
+                    Pixel("-", 16, 253, 224),
+                    Pixel("-", 16, 253, 225),
+                ]
+            ],
         }
         self.blocks = blocklist[blocktype]
 
@@ -650,7 +784,10 @@ class Block:
     """
     def __init__(self, blocktype, screen, y, x): 
         self.blocktypestr = blocktype
-        self.blocktype = BType(blocktype)
+        if not ("MONITOR" in blocktype):
+            self.blocktype = BType(blocktype)
+        else:
+            self.blocktype = MType(blocktype)
         self.screen = screen
         self.y = y # Map array Index
         self.x = x # Map array index
@@ -676,3 +813,9 @@ class Block:
     def coords(self):
         return self.y, self.x
 
+    def morph(self, blocktype): 
+        """
+        Changes a given block's representation without altering memory
+        """
+        self.blocktypestr = blocktype
+        self.blocktype = Btype(blocktype)
