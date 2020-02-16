@@ -27,9 +27,17 @@ class Game:
             for x in range(0, w - 5, 5):
                 ret = self.world.draw(y, x, (screen_start[0] + y) // 3, (screen_start[1] + x) // 5)
 
+    player_block_type = {
+        "NORMAL": "PLAYERNORMAL",
+        "INTERACT": "PLAYERINTERACT",
+        "PLACE": "PLAYERPLACE",
+        "BREAK": "PLAYERBREAK"
+    }
+
     def render_player(self):
         h, w = self.stdscr.getmaxyx()
-        playerblock = blocks.Block("PLAYER", self.stdscr, self.player.y, self.player.x)
+        
+        playerblock = blocks.Block(self.player_block_type[self.player.action], self.stdscr, self.player.y, self.player.x)
         playerblock.draw(self.roundbase(h // 2, 3), self.roundbase(w, 10) // 2) # magic, dont touch
 
     # The main game loop, use run() instead
