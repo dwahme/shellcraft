@@ -18,8 +18,6 @@ class Game:
         h, w = self.stdscr.getmaxyx()
 
         p_y, p_x = self.player.coords()
-        # p_x %= world.World.max_x
-        # p_y %= world.World.max_y
         p_y *= 3
         p_x *= 5
         
@@ -46,8 +44,6 @@ class Game:
         self.world.generate()
         self.player.y, self.player.x = self.world.spawn()
 
-        comp = computer.Computer("1", blocks.Block("COMP", self.stdscr, 15, 250))
-
         while (True):
             c = stdscr.getch()
 
@@ -57,26 +53,17 @@ class Game:
             # preferably some dispatch function?
             # NOTE THAT PLAYER Y VALUE DOES NOT WRAP (BUT X DOES)
 
-            self.player.handle_player_move(c, self.world, self.stdscr)
+            self.player.handle_player_move(c, self.world, self.stdscr, self)
 
-            
-            if c == 114: # r
-                comp.run()
-            if c == 101: # e
-                comp.editor(self.stdscr)
-            else:
-                self.render_world()
-                self.render_player()
+            self.render_world()
+            self.render_player()
 
             # if computer or wire block added/deleted
             for c in self.computers:
                 c.update_network(self.world, self.computers)
 
-            for c in self.computers:
-                c.broadcast_all()
-
-            if comp.process != None:
-                print(comp.read_port(2))
+            # for c in self.computers:
+            #     c.broadcast_all()
 
             self.stdscr.refresh()
             time.sleep(.01)

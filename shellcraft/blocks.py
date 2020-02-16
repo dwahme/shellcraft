@@ -622,3 +622,6 @@ class Block:
         return self.blocktypestr
 
         # self.screen.addstr(self.locX, self.locY, str(self.blocktype.blocks), curses.color_pair(9))
+    
+    def coords(self):
+        return self.y, self.x

@@ -1,5 +1,5 @@
 from .enums.direction import Direction
-from . import blocks
+from . import blocks, computer
 from .utils.chilog import chilog
 
 class Player:
@@ -15,8 +15,7 @@ class Player:
     def coords(self):
         return self.y, self.x
 
-    def handle_player_move(self, c, world, stdscr):
-        chilog('1')
+    def handle_player_move(self, c, world, stdscr, game):
         """
         PLAYER CONTROLS:
 
