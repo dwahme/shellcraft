@@ -77,10 +77,14 @@ class Computer:
         return out
 
     def broadcast(self, out_port):
-        data = read_port(out_port)
+        data = self.read_port(out_port)
 
-        for c in self.port_table[out_port]:
-            c.send_port
+        for (c, p) in self.port_table[out_port]:
+            c.send_port(p, data)
+
+    def broadcast_all(self):
+        for port, _ in self.port_table:
+            self.broadcast(port)
 
     # Queues data to be sent in
     def send_port(self, port, msg):

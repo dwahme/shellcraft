@@ -59,7 +59,7 @@ class Game:
         self.world.generate()
         self.player.y, self.player.x = self.world.spawn()
 
-        comp = computer.Computer("hello", blocks.Block("COMP", self.stdscr, 15, 250))
+        comp = computer.Computer("1", blocks.Block("COMP", self.stdscr, 15, 250))
 
         while (True):
             c = stdscr.getch()
@@ -84,6 +84,9 @@ class Game:
             # if computer or wire block added/deleted
             for c in self.computers:
                 c.update_network(self.world, self.computers)
+
+            for c in self.computers:
+                c.broadcast_all()
 
             if comp.process != None:
                 print(comp.read_port(2))
