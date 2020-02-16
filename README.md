@@ -1,7 +1,5 @@
 # Shellcraft
-Minecraft in the Terminal with Computer Blocks
-
-Essentially, this is a Terminal/Shell Video Game, heavily influenced by Minecraft/Terraria. This is implemented completely in the terminal, and supports programmable computer blocks which allow running arbitrary programs and IO interfacing with other computer blocks. You can create a network!
+2D Minecraft in the terminal with programmable computer blocks 
 
 
 ## What it does
