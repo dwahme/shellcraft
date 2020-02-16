@@ -10,6 +10,7 @@ class Player:
         self.item = "DIRT"
         self.originalBlockType = "AIR"
         self.action = "PLACE"
+        self.health = 3
 
     def coords(self):
         return self.y, self.x

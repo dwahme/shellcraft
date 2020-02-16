@@ -234,7 +234,7 @@ class World:
         Returns initial player coordinate
         """
 
-        return 6,0
+        return World.ground-1,0
 
 
 

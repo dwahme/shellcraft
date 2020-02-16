@@ -34,24 +34,6 @@ class Game:
         playerblock = blocks.Block("PLAYER", self.stdscr, self.player.y, self.player.x)
         playerblock.draw(self.roundbase(h // 2, 3), self.roundbase(w, 10) // 2) # magic, dont touch
 
-
-    # def get_block_from_screen_pos(self, y, x):
-    #     """
-    #     y, x is the map's indexing of the various blocks, not the pixel coordinates
-    #     """
-    #     h, w = self.stdscr.getmaxyx()
-    #     p_y, p_x = self.player.coords()
-    #     p_y *= 3
-    #     p_x *= 5
-    #     screen_start = (p_y - h // 2, (p_x) - w // 2)
-    #     block_y = (screen_start[0] + y) // 3
-    #     block_x = (screen_start[1] + x) // 5
-    #     block = self.world.map[block_y][block_x % self.world.max_x]
-
-    #     return block
-
-    
-
     # The main game loop, use run() instead
     def __main(self, stdscr):
         self.stdscr = stdscr
