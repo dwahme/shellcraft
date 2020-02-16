@@ -159,3 +159,9 @@ class World:
             return 0
         
         return -1
+
+    def get_block_from_pos(self, y, x): 
+        """
+        y, x: index of block
+        """
+        return self.map[y][x % World.max_x] # wraping
