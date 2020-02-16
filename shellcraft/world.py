@@ -6,8 +6,9 @@ class World:
 
     max_y = 30
     max_x = 300
-    ground = 7
+    ground = 10
     dirt_depth = 3
+    cave_depth = 7
 
     def __init__(self, stdscr):
         self.map = []
@@ -37,18 +38,15 @@ class World:
                 tmp.append(b)
             self.map.append(tmp)
 
-        for j in range(World.ground+World.dirt_depth, World.max_y):
+        for j in range(World.ground+World.dirt_depth, World.max_y - 1):
             tmp = []
             for i in range (World.max_x):
                 b = blocks.Block("STONE", self.stdscr, j, i)
                 tmp.append(b)
             self.map.append(tmp)
 
-        self.map[0][0] = blocks.Block("ZEROZERO", self.stdscr, 0, 0)
-        self.map[0][1] = blocks.Block("ZEROONE", self.stdscr, 0, 1)
-        self.map[1][0] = blocks.Block("ONEZERO", self.stdscr, 1, 0)
 
-         # Lake generation
+        # Lake generation
        
         lake_x = set()
         checked = set()
@@ -92,6 +90,7 @@ class World:
            
             hilltops = []
             max_height = math.ceil(0.5+round(math.log(len_land,3)))
+            max_height = round(max_height * (World.ground - 1) / 6)
             
             # Per hilltop in each viable land
             for i in range(hilltop_count) :
@@ -151,10 +150,21 @@ class World:
                 prob = prob * prob
        
         # Initial computer generation
-        self.map[0][0] = blocks.Block("COMP", self.stdscr, 0, 0)
-        self.map[0][0] = blocks.Block("ZEROZERO", self.stdscr, 0, 0)
-        self.map[0][1] = blocks.Block("ZEROONE", self.stdscr, 0, 1)
-        self.map[1][0] = blocks.Block("ONEZERO", self.stdscr, 1, 0)
+        #self.map[0][0] = blocks.Block("COMP", self.stdscr, 0, 0)
+        #self.map[0][0] = blocks.Block("ZEROZERO", self.stdscr, 0, 0)
+        #self.map[0][1] = blocks.Block("ZEROONE", self.stdscr, 0, 1)
+        #self.map[1][0] = blocks.Block("ONEZERO", self.stdscr, 1, 0)
+        
+        self.cave_gen()
+        
+        # Add bedrock
+        for j in range(World.max_y - 1, World.max_y):
+            tmp = []
+            for i in range (World.max_x):
+                b = blocks.Block("BEDROCK", self.stdscr, j, i)
+                tmp.append(b)
+            self.map.append(tmp)
+
 
 
 
@@ -227,6 +237,64 @@ class World:
             self.convert_dirt(y-1, x, prob * dec, limit-1, checked)
         return
         
+    def cave_gen(self) :
+        
+        cave_num = World.max_x // 60
+        cave_num = random.randint(round(cave_num * 0.6), round(cave_num * 1.4))
+        checked = set()
+        prob = 0.9
+        limit = 50
+        for i in range(cave_num) :
+            x = random.randrange(0, World.max_x)
+            y = random.randrange(World.max_y - World.cave_depth, World.max_y)
+            self.cave_dig(y, x, prob, limit, checked)
+            checked.clear()
+            
+    def cave_dig(self, y, x, prob, limit, checked) :
+        x = x % World.max_x
+        if (limit <= 0) :
+            return
+        elif ((y,x) in checked) :
+            return
+        elif (y < 0 or y >= World.max_y) :
+            return
+        checked.add((y, x))
+        # Water check
+        #water_check = self.cave_dig_water_check(y,x)
+        #if water_check == 0 or water_check == 1 :
+        #    return
+        #elif water_check >= 2 :
+        #    self.map[y][x] = blocks.Block("AIR", self.stdscr, y, x)
+        #    return;
+        if self.map[y][x].blocktypestr == "WATER" :
+            return
+        self.map[y][x] = blocks.Block("AIR", self.stdscr, y, x)
+        if (random.random() < prob) :
+            dec = 0.95
+            self.convert_lake(y,x-1, prob * dec, limit-1, checked)
+            self.convert_lake(y, x+1, prob * dec, limit-1, checked)
+            extra = random.uniform(0.85, 1)
+            if(random.random() < 0.7) :
+                self.convert_lake(y+1, x+1, prob * dec * extra, limit-1, checked)
+            if(random.random() < 0.7) :
+                self.convert_lake(y+1, x-1, prob * dec * extra, limit-1, checked)
+            if(random.random() < 0.7) :
+                self.convert_lake(y-1, x+1, prob * dec * extra, limit-1, checked)
+            if(random.random() < 0.7) :
+                self.convert_lake(y-1, x-1, prob * dec * extra, limit-1, checked)
+        return
+    
+    def cave_dig_water_check(self, y, x) :
+        length_arr = [0,1,-1,2,-2]
+        for j in length_arr :
+            cy = y + j
+            if (cy >= World.max_y or cy < 0) :
+                continue
+            for i in length_arr :
+                cx = (x + i) % World.max_x
+                if self.map[cy][cx].blocktypestr == "WATER" :
+                    return min(math.abs(j), math.abs(i))
+        return -1
         
 
     def spawn(self):
@@ -234,7 +302,7 @@ class World:
         Returns initial player coordinate
         """
 
-        return 6,0
+        return World.ground-1,0
 
 
 
