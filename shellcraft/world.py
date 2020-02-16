@@ -8,7 +8,7 @@ class World:
 
     max_y = 30
     max_x = 300
-    ground = 10
+    ground = 14
     dirt_depth = 3
     cave_depth = 7
 
@@ -40,7 +40,7 @@ class World:
                 tmp.append(b)
             self.map.append(tmp)
 
-        for j in range(World.ground+World.dirt_depth, World.max_y):
+        for j in range(World.ground+World.dirt_depth, World.max_y - 2):
             tmp = []
             for i in range (World.max_x):
                 # If j is large, slightly increase threshold
@@ -53,6 +53,13 @@ class World:
                     chilog("Diamond: " + str(threshold) + " > " + str(rand) + "\n")
                     b = blocks.Block("DIAMOND", self.stdscr, j, i)
 
+                tmp.append(b)
+            self.map.append(tmp)
+
+        for j in range(World.max_y - 2, World.max_y):
+            tmp = []
+            for i in range (World.max_x):
+                b = blocks.Block("LAVA", self.stdscr, j, i)
                 tmp.append(b)
             self.map.append(tmp)
 
@@ -134,6 +141,8 @@ class World:
                     break
                 elif self.map[j][i].blocktypestr == "DIRT" :
                     self.map[j][i] = blocks.Block("DIRTGRASS", self.stdscr, j, i)
+                    if (random.random() < 0.6):
+                        self.map[j-1][i] = blocks.Block("WEEDS", self.stdscr, j-1, i)
                     break
         
         # Sand generation
@@ -346,9 +355,20 @@ class World:
             next_block_right_type = self.get_block_from_pos(y, x + 1).blocktypestr
             next_block_bottom_type = self.get_block_from_pos(y + 1, x).blocktypestr
 
+            if (next_block_bottom_type == "LAVA"):
+                self.map[y][x % World.max_x] = blocks.Block("OBSIDIAN", self.stdscr, y, x % World.max_x)
+            if (next_block_right_type == "LAVA"):
+                self.map[y][x % World.max_x] = blocks.Block("OBSIDIAN", self.stdscr, y, x % World.max_x)
+            if (next_block_left_type == "LAVA"):
+                self.map[y][x % World.max_x] = blocks.Block("OBSIDIAN", self.stdscr, y, x % World.max_x)
+                
+
             if (next_block_left_type == "AIR"):
                 self.coalesce_water(y, (x - 1) % World.max_x)
             if (next_block_right_type == "AIR"):
                 self.coalesce_water(y, (x + 1) % World.max_x)
             if (next_block_bottom_type == "AIR"):
                 self.coalesce_water(y + 1, x % World.max_x)
+
+            
+                

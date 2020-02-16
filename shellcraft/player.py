@@ -60,6 +60,7 @@ class Player:
             '4': "STONE",
             '5': "SAND", 
             '6': "MONITORBASIC",
+            '7': "TNT"
         }
 
         if (c == ord(' ') and debug):
@@ -104,7 +105,7 @@ class Player:
         new_x = (self.x + dir_tuple[1]) % world.max_x
         blocktype = world.get_block_from_pos(self.y + dir_tuple[2], new_x).blocktypestr
 
-        if (blocktype == "WATER" or blocktype == "AIR" or "WIRE" in blocktype):
+        if (blocktype == "WATER" or blocktype == "AIR" or "WIRE" in blocktype or blocktype == "WEEDS"):
             return True 
         else:
             return False 
@@ -115,7 +116,7 @@ class Player:
         new_x = (self.x + dir_tuple[1]) % world.max_x
         blocktype = world.get_block_from_pos(self.y + dir_tuple[2], new_x).blocktypestr
 
-        if (blocktype == "WATER" or blocktype == "AIR"):
+        if (blocktype == "WATER" or blocktype == "AIR" or blocktype == "WEEDS"):
             return True 
         else:
             return False 
@@ -149,7 +150,8 @@ class Player:
         new_y = self.y + dir_tuple[2]
         new_x = (self.x + dir_tuple[1]) % world.max_x
 
-        if (world.map[self.y + dir_tuple[2]][new_x].blocktypestr == "BEDROCK"):
+        block_type = world.map[self.y + dir_tuple[2]][new_x].blocktypestr
+        if (block_type == "BEDROCK" or block_type == "CLOUD"):
             return Event.NO_CHANGE
         b_type = world.get_block_from_pos(new_y, new_x).blocktypestr
 
@@ -187,3 +189,36 @@ class Player:
             
             cpu.editor(stdscr)
             cpu.run()
+        if (blocktype == "TNT"):
+            # Set nearby blocks to be air, if that block happens to also be TNT, do the same 
+            # with the exception that we're on the same block 
+            """
+               XXXXXXX
+               XXXXXXX
+               XXXTXXX
+               XXXXXXX
+               XXXXXXX
+            """
+            # (y, x)
+            self.blow_up(world, stdscr, self.y, self.x)
+
+            
+    
+    def blow_up(self, world, stdscr, y, x):
+        destroy_list = []
+        for a in range (-2, 2):
+            for b in range(-3, 3):
+                destroy_list.append((a, b))
+        # destroy_list = [(0, -2), (0, -1), (0, 0), (0, 1), (0, 2), (-1, -2), (-1, -1), (-1, 0), (-1, 1), (-1, 2), (1, -2), (1, -1), (1, 0), (1, 1), (1, 2)]
+        for (dy, dx) in destroy_list:
+            new_y = y + dy 
+            new_x = (x + dx) % world.max_x
+            if (new_y >= world.max_y):
+                continue
+            existing_block_type = world.map[new_y][new_x].blocktypestr
+
+            if (existing_block_type == "TNT" and (dy, dx) != (0, 0)):
+                self.blow_up(world, stdscr, new_y, new_x)
+            if (existing_block_type != "BEDROCK" and existing_block_type != "CLOUD"):
+                world.map[new_y][new_x] = blocks.Block("AIR", stdscr, new_y, new_x)
+
