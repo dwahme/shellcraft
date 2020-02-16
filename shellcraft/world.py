@@ -12,9 +12,11 @@ class World:
     dirt_depth = 3
     cave_depth = 7
 
-    def __init__(self, stdscr):
+    def __init__(self, stdscr, seed = None):
         self.map = []
         self.stdscr = stdscr
+        self.seed = seed
+        random.seed(seed)
 
     def generate(self):
         # GENERATE CLOUDS 
