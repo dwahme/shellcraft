@@ -1,11 +1,11 @@
 import curses
 from .utils.chilog import chilog
-from enum import Enum
+from enum import IntEnum
 from queue import Queue, Empty
 from subprocess import Popen, run, PIPE
 from threading import Thread
 
-class Port(Enum):
+class Port(IntEnum):
     RIGHT = 0
     BOTTOM = 1
     LEFT = 2
@@ -84,14 +84,15 @@ class Computer:
             c.send_port(p, data)
 
     def broadcast_all(self):
-        for port, _ in self.port_table:
+        for port in self.port_table.keys():
             self.broadcast(port)
 
     # Queues data to be sent in
     def send_port(self, port, msg):
-        to_send = bytes("{} {}".format(port, msg))
+        to_send = bytes("{} {}".format(port, msg), 'utf-8')
 
-        self.process.communicate(input=to_send)
+        if self.process != None:
+            self.process.communicate(input=to_send)
 
     def find_computer(self, computers, y, x):
         for computer in computers:
@@ -102,12 +103,16 @@ class Computer:
 
     # Performs BFS across wires given a starting point and adds computers to queue
     def __update_network(self, world, computers, start):
+        y, x, _ = start
+        
+        blocktype = world.map[y][x].blocktypestr
+        if "WIRE" not in blocktype and blocktype != "COMP":
+            return []
+
         queue = Queue()
         queue.put(start)
 
-        y, x, _ = start
-
-        checked = { self.block.coords(), (y, x) }
+        checked = { self.block.coords() }
 
         found_ports = []
         
@@ -115,38 +120,39 @@ class Computer:
 
             y, x, port = queue.get()
 
-            chilog("{} {}\n".format(y, x))
-            
             block = world.map[y][x]
 
             if "WIRE" in block.blocktypestr:
-                dirs = block.blocktypestr.split("_")
+                dirs = block.blocktypestr.split("_")[1]
 
-                if "T" in dirs and (y, x) not in checked:
-                    queue.add((y - 1, x, Port.BOTTOM))
+                chilog("    WIRE: {} {}\n".format((y, x), dirs))
+
+                if "T" in dirs and (y - 1, x) not in checked:
+                    queue.put((y - 1, x, Port.BOTTOM))
                     checked.add((y - 1, x))
 
-                if "B" in dirs and (y, x) not in checked:
-                    queue.add((y + 1, x, Port.TOP))
+                if "B" in dirs and (y + 1, x) not in checked:
+                    queue.put((y + 1, x, Port.TOP))
                     checked.add((y + 1, x))
 
-                if "R" in dirs and (y, x) not in checked:
-                    queue.add((y, x + 1, Port.LEFT))
+                if "R" in dirs and (y, x + 1) not in checked:
+                    queue.put((y, x + 1, Port.LEFT))
                     checked.add((y, x + 1))
 
-                if "L" in dirs and (y, x) not in checked:
-                    queue.add((y, x - 1, Port.RIGHT))
+                if "L" in dirs and (y, x - 1) not in checked:
+                    queue.put((y, x - 1, Port.RIGHT))
                     checked.add((y, x - 1))
 
             elif block.blocktypestr == "COMP":
                 found_ports.append((y, x, port))
 
-        return [(find_computer(computers, y, x), port) for (y, x, p) in found_ports]
+        chilog("BFS: {} {}\n".format(start, found_ports))
+
+        return [(self.find_computer(computers, y, x), p) for (y, x, p) in found_ports]
 
     # Finds the networks across each port
     def update_network(self, world, computers):
         y, x = self.block.coords()
-        chilog("update net {} {}".format(y, x))
 
         self.port_table[Port.RIGHT] = self.__update_network(world, computers, (y, x + 1, Port.LEFT))
         self.port_table[Port.BOTTOM] = self.__update_network(world, computers, (y + 1, x, Port.TOP))

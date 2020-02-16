@@ -33,6 +33,7 @@ class Player:
         K - PLACE/BREAK BLOCK DOWN
         L - PLACE/BREAK BLOCK RIGHT
         """
+        ret = 0
 
         # Debug
         debug = False
@@ -83,7 +84,7 @@ class Player:
             dir_tuple = dir[chr(c)]
             if (self.action == "PLACE"):
                 if (self.place_legal(dir_tuple, world)):
-                    self.place_block(dir_tuple, world, stdscr)
+                    ret = self.place_block(dir_tuple, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(dir_tuple, world, stdscr)
             if (self.action == "INTERACT"):
@@ -92,6 +93,8 @@ class Player:
         # Inventory 
         elif (c == ord('1') or c == ord('2') or c == ord('3') or c == ord('4')):
             self.item = items[chr(c)]
+
+        return ret
         
 
     # Movement Legality     
@@ -113,12 +116,26 @@ class Player:
         else:
             return False 
 
-    def place_block(self, dir_tuple, world, stdscr):
-        world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = blocks.Block(self.item, stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
+    def place_block(self, dir_tuple, world, stdscr, game):
+        b = blocks.Block(self.item, stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
+        world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = b
+
+        if b.blocktypestr == "COMP":
+            c = computer.Computer(str(len(game.computers)), b)
+            game.computers.append(c)
+            # c.editor(game.stdscr)
+
+            return 1
+
+        elif "WIRE" in b.blocktypestr:
+            return 1
+
+        return 0
 
     def break_block(self, dir_tuple, world, stdscr):
         world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
         world.coalesce_water(self.y + dir_tuple[2], self.x + dir_tuple[1])
+<<<<<<< HEAD
 
     
     # Block interaction 
@@ -135,3 +152,5 @@ class Player:
         if (blocktype == "COMP"):
             cpu = computer.Computer.find_computer(computers, self.y + dir_tuple[2], (self.x + dir_tuple[1]) % world.max_x)
             cpu.editor(stdscr)
+=======
+>>>>>>> f3eb20fa8383b3578c2871eeb28ff982a417627e
