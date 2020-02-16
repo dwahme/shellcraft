@@ -92,7 +92,7 @@ class Player:
             if (self.action == "BREAK"):
                 ret = self.break_block(dir_tuple, world, stdscr)
             if (self.action == "INTERACT"):
-                self.interact_block(dir_tuple, world, stdscr, game.computers)
+                self.interact_block(dir_tuple, world, stdscr, game.computers + game.pis)
 
         # Inventory 
         elif (c in [ord(n) for n in items.keys()]):
@@ -188,7 +188,7 @@ class Player:
         new_x = (self.x + dir_tuple[1]) % world.max_x
         blocktype = world.get_block_from_pos(self.y + dir_tuple[2], new_x).blocktypestr
 
-        if (blocktype == "COMP"):
+        if blocktype == "COMP" or blocktype == "PI":
             cpu = computer.Computer.find_computer(computers, self.y + dir_tuple[2], new_x)
 
             if cpu.name == None:
@@ -196,7 +196,7 @@ class Player:
             
             cpu.editor(stdscr)
             cpu.run()
-        if (blocktype == "TNT"):
+        if blocktype == "TNT":
             # Set nearby blocks to be air, if that block happens to also be TNT, do the same 
             # with the exception that we're on the same block 
             """
