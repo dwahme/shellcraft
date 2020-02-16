@@ -254,3 +254,32 @@ class World:
         y, x: index of block
         """
         return self.map[y][x % World.max_x] # wraping
+
+    def coalesce_water(self, y, x):
+        """
+        y and x denotes the map position of the broken block
+        
+        will need to check for the blocks around it (TOP, LEFT, RIGHT), and see if 
+        they're a water block. If so, this block becomes water too
+
+        Then, if the LEFT, RIGHT, BOTTOM blocks are air, call coalesce on them too
+        """
+        block_top_type = self.get_block_from_pos(y - 1, x).blocktypestr
+        block_left_type = self.get_block_from_pos(y, x - 1).blocktypestr
+        block_right_type = self.get_block_from_pos(y, x + 1).blocktypestr
+        
+        if (block_top_type == "WATER" or block_left_type == "WATER" or block_right_type == "WATER"):
+            self.map[y][x % World.max_x] = blocks.Block("WATER", self.stdscr, y, x)
+            next_block_left_type = self.get_block_from_pos(y, x - 1).blocktypestr
+            next_block_right_type = self.get_block_from_pos(y, x + 1).blocktypestr
+            next_block_bottom_type = self.get_block_from_pos(y + 1, x).blocktypestr
+
+            if (next_block_left_type == "AIR"):
+                self.coalesce_water(y, x - 1)
+            elif (next_block_right_type == "AIR"):
+                self.coalesce_water(y, x + 1)
+            elif (next_block_bottom_type == "AIR"):
+                self.coalesce_water(y + 1, x)
+
+
+        

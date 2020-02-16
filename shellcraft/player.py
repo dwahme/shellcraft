@@ -111,3 +111,4 @@ class Player:
 
     def break_block(self, dir_tuple, world, stdscr):
         world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
+        world.coalesce_water(self.y + dir_tuple[2], self.x + dir_tuple[1])
