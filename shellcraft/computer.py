@@ -17,6 +17,8 @@ class Computer:
 
         self.out_ports = [Queue() for _ in range(4)]
 
+        self.port_table = {}
+
     # Queues output from a process to be read later
     def enqueue_output(self, out, queues):
         for line in iter(out.readline, b''):
@@ -72,3 +74,50 @@ class Computer:
         to_send = bytes("{} {}".format(port, msg))
 
         self.process.communicate(input=to_send)
+
+    # Performs BFS across wires given a starting point and adds computers to queue
+    def __update_network(self, world, start):
+        queue = Queue()
+        queue.put(start)
+
+        checked = { block.coords(), start }
+
+        found_ports = []
+        
+        while not queue.empty():
+
+            y, x = queue.get()
+            block = world[y][x]
+
+            if "WIRE" in block.blocktypestr:
+                dirs = block.blocktypestr.split("_")
+
+                if "T" in dirs and (y, x) not in checked:
+                    queue.add((y + 1, x))
+                    checked.add((y + 1, x))
+
+                if "B" in dirs and (y, x) not in checked:
+                    queue.add((y - 1, x))
+                    checked.add((y - 1, x))
+
+                if "R" in dirs and (y, x) not in checked:
+                    queue.add((y, x + 1))
+                    checked.add((y, x + 1))
+
+                if "L" in dirs and (y, x) not in checked:
+                    queue.add((y, x - 1))
+                    checked.add((y, x - 1))
+
+            elif block.blocktypestr == "COMP":
+                found_ports.append((y, x))
+
+        return found_ports
+
+    # Finds the networks across each port
+    def update_network(self, world):
+        y, x = self.block.coords()
+
+        port_table["T"] = __update_network(world, (y + 1, x))
+        port_table["B"] = __update_network(world, (y - 1, x))
+        port_table["R"] = __update_network(world, (y, x + 1))
+        port_table["L"] = __update_network(world, (y, x - 1))

@@ -54,12 +54,12 @@ class Game:
                 comp.run()
             if c == 101: # e
                 comp.editor(self.stdscr)
-            else:
-                self.render()
+            
+            self.render()
 
             # if computer or wire block added/deleted
             for c in self.computers:
-                c.update_ports(self.world)
+                c.update_network(self.world)
 
             if comp.process != None:
                 print(comp.read_port(2))
