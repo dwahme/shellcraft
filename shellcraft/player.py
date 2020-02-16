@@ -79,7 +79,7 @@ class Player:
             dir_tuple = dir[chr(c)]
             if (self.action == "PLACE"):
                 if (self.place_legal(dir_tuple, world)):
-                    ret = self.place_block(dir_tuple, world, stdscr)
+                    ret = self.place_block(dir_tuple, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(dir_tuple, world, stdscr)
 
@@ -109,7 +109,7 @@ class Player:
         else:
             return False 
 
-    def place_block(self, dir_tuple, world, stdscr):
+    def place_block(self, dir_tuple, world, stdscr, game):
         b = blocks.Block(self.item, stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
         world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = b
 
