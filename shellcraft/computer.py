@@ -88,8 +88,15 @@ class Computer:
 
         self.process.communicate(input=to_send)
 
+    def find_computer(self, computers, y, x):
+        for computer in computers:
+            if computer.block.coords() == (y, x):
+                return computer
+        
+        return None
+
     # Performs BFS across wires given a starting point and adds computers to queue
-    def __update_network(self, world, start):
+    def __update_network(self, computers, world, start):
         queue = Queue()
         queue.put(start)
 
@@ -124,13 +131,15 @@ class Computer:
             elif block.blocktypestr == "COMP":
                 found_ports.append((y, x, port))
 
-        return found_ports
+        return [(find_computer(computers, y, x), port) for (y, x, p) in found_ports]
 
     # Finds the networks across each port
-    def update_network(self, world):
+    def update_network(self, world, computers):
         y, x = self.block.coords()
 
-        port_table[Port.RIGHT] = __update_network(world, (y, x + 1, Port.LEFT))
-        port_table[Port.BOTTOM] = __update_network(world, (y + 1, x, Port.TOP))
-        port_table[Port.LEFT] = __update_network(world, (y, x - 1, Port.RIGHT))
-        port_table[Port.TOP] = __update_network(world, (y - 1, x, Port.BOTTOM))
+        port_table[Port.RIGHT] = __update_network(world, computers, (y, x + 1, Port.LEFT))
+        port_table[Port.BOTTOM] = __update_network(world, computers, (y + 1, x, Port.TOP))
+        port_table[Port.LEFT] = __update_network(world, computers, (y, x - 1, Port.RIGHT))
+        port_table[Port.TOP] = __update_network(world, computers, (y - 1, x, Port.BOTTOM))
+
+        

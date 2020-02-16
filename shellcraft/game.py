@@ -65,7 +65,7 @@ class Game:
 
             # if computer or wire block added/deleted
             for c in self.computers:
-                c.update_network(self.world)
+                c.update_network(self.world, self.computers)
 
             if comp.process != None:
                 print(comp.read_port(2))
