@@ -104,6 +104,7 @@ class Computer:
     # Performs BFS across wires given a starting point and adds computers to queue
     def __update_network(self, world, computers, start):
         y, x, _ = start
+        x %= world.max_x
         
         blocktype = world.map[y][x].blocktypestr
         if "WIRE" not in blocktype and blocktype != "COMP":
@@ -120,6 +121,8 @@ class Computer:
 
             y, x, port = queue.get()
             x %= world.max_x
+
+            chilog("{} {}\n".format(y, x))
 
             block = world.map[y][x]
 
