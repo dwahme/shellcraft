@@ -1,5 +1,6 @@
 from .enums.direction import Direction
-from . import blocks, computer  
+from .enums.event import Event
+from . import blocks, computer, monitor
 from .utils.chilog import chilog
 
 class Player:
@@ -33,7 +34,7 @@ class Player:
         K - PLACE/BREAK BLOCK DOWN
         L - PLACE/BREAK BLOCK RIGHT
         """
-        ret = 0
+        ret = Event.NO_CHANGE
 
         # Debug
         debug = False
@@ -87,7 +88,7 @@ class Player:
                 if (self.place_legal(dir_tuple, world)):
                     ret = self.place_block(dir_tuple, world, stdscr, game)
             if (self.action == "BREAK"):
-                self.break_block(dir_tuple, world, stdscr)
+                ret = self.break_block(dir_tuple, world, stdscr)
             if (self.action == "INTERACT"):
                 self.interact_block(dir_tuple, world, stdscr, game.computers)
 
@@ -128,19 +129,36 @@ class Player:
             c = computer.Computer(b)
             game.computers.append(c)
 
-            return 1
+            return Event.COMPUTER_CHANGE
 
         elif "WIRE" in b.blocktypestr:
-            return 1
+            return Event.COMPUTER_CHANGE
 
-        return 0
+        elif "MONITOR" in b.blocktypestr:
+            m = monitor.Monitor([b])
+            game.monitors.append(m)
+
+            return Event.MONITOR_CHANGE
+
+        return Event.NO_CHANGE
 
     def break_block(self, dir_tuple, world, stdscr):
+        new_y = self.y + dir_tuple[2]
         new_x = (self.x + dir_tuple[1]) % world.max_x
-        world.map[self.y + dir_tuple[2]][new_x] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], new_x)
-        world.coalesce_water(self.y + dir_tuple[2], new_x)
-        world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
-        world.coalesce_water(self.y + dir_tuple[2], self.x + dir_tuple[1])
+        b_type = world.get_block_from_pos(new_y, new_x).blocktypestr
+
+        world.map[new_y][new_x] = blocks.Block("AIR", stdscr, new_y, new_x)
+        world.coalesce_water(new_y, new_x)
+        world.map[new_y][new_x] = blocks.Block("AIR", stdscr, new_y, new_x)
+        world.coalesce_water(new_y, new_x)
+
+        if b_type == "COMP" or "WIRE" in b_type:
+            return Event.COMPUTER_CHANGE
+            
+        elif "MONITOR" in b_type:
+            return Event.MONITOR_CHANGE
+
+        return Event.NO_CHANGE
 
     
     # Block interaction 

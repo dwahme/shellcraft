@@ -158,14 +158,10 @@ class Computer:
             y, x, port = queue.get()
             x %= world.max_x
 
-            chilog("{} {}\n".format(y, x))
-
             block = world.map[y][x]
 
             if "WIRE" in block.blocktypestr:
                 dirs = block.blocktypestr.split("_")[1]
-
-                chilog("    WIRE: {} {}\n".format((y, x), dirs))
 
                 if "T" in dirs and (y - 1, x) not in checked:
                     queue.put((y - 1, x, Port.BOTTOM))
@@ -186,7 +182,6 @@ class Computer:
             elif block.blocktypestr == "COMP":
                 found_ports.append((y, x, port))
 
-        chilog("BFS: {} {}\n".format(start, found_ports))
 
         return [(Computer.find_computer(computers, y, x), p) for (y, x, p) in found_ports]
 
