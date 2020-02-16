@@ -1,6 +1,7 @@
 from .enums.direction import Direction
-from . import blocks, computer, world
+from . import blocks, computer  
 from .utils.chilog import chilog
+from . world import World
 
 class Player:
 
@@ -135,7 +136,6 @@ class Player:
     def break_block(self, dir_tuple, world, stdscr):
         world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
         world.coalesce_water(self.y + dir_tuple[2], self.x + dir_tuple[1])
-<<<<<<< HEAD
 
     
     # Block interaction 
@@ -147,10 +147,8 @@ class Player:
 
         ELSE - DO NOTHING
         """
-        blocktype = world.get_block_from_pos(self.y + dir_tuple[2], (self.x + dir_tuple[1]) % world.max_x).blocktypestr
+        blocktype = world.get_block_from_pos(self.y + dir_tuple[2], (self.x + dir_tuple[1]) % World.max_x).blocktypestr
 
         if (blocktype == "COMP"):
-            cpu = computer.Computer.find_computer(computers, self.y + dir_tuple[2], (self.x + dir_tuple[1]) % world.max_x)
+            cpu = computer.Computer.find_computer(computers, self.y + dir_tuple[2], (self.x + dir_tuple[1]) % World.max_x)
             cpu.editor(stdscr)
-=======
->>>>>>> f3eb20fa8383b3578c2871eeb28ff982a417627e

@@ -152,10 +152,6 @@ class World:
        
         # Initial computer generation
         self.map[0][0] = blocks.Block("COMP", self.stdscr, 0, 0)
-        self.map[0][0] = blocks.Block("ZEROZERO", self.stdscr, 0, 0)
-        self.map[0][1] = blocks.Block("ZEROONE", self.stdscr, 0, 1)
-        self.map[1][0] = blocks.Block("ONEZERO", self.stdscr, 1, 0)
-
 
 
 
