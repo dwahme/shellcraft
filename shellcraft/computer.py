@@ -131,6 +131,6 @@ class Computer:
         y, x = self.block.coords()
 
         port_table[Port.RIGHT] = __update_network(world, (y, x + 1, Port.LEFT))
-        port_table[Port.BOTTOM] = __update_network(world, (y + 1, x, , Port.TOP))
+        port_table[Port.BOTTOM] = __update_network(world, (y + 1, x, Port.TOP))
         port_table[Port.LEFT] = __update_network(world, (y, x - 1, Port.RIGHT))
         port_table[Port.TOP] = __update_network(world, (y - 1, x, Port.BOTTOM))
