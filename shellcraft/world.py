@@ -148,20 +148,14 @@ class World:
                     break
                 right_ground = right_water
                 prob = prob * prob
-       
-        # Initial computer generation
-        #self.map[0][0] = blocks.Block("COMP", self.stdscr, 0, 0)
-        #self.map[0][0] = blocks.Block("ZEROZERO", self.stdscr, 0, 0)
-        #self.map[0][1] = blocks.Block("ZEROONE", self.stdscr, 0, 1)
-        #self.map[1][0] = blocks.Block("ONEZERO", self.stdscr, 1, 0)
         
         self.cave_gen()
         
         # Add bedrock
         for i in range (World.max_x):
             self.map[World.max_y-1][i] = blocks.Block("BEDROCK", self.stdscr, World.max_y-1, i)
-
-
+    
+    
     
     ## Helper Functions
 

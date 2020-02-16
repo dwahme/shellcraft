@@ -53,17 +53,19 @@ class Game:
             # preferably some dispatch function?
             # NOTE THAT PLAYER Y VALUE DOES NOT WRAP (BUT X DOES)
 
-            self.player.handle_player_move(c, self.world, self.stdscr, self)
+            network_change = self.player.handle_player_move(c, self.world, self.stdscr, self)
 
             self.render_world()
             self.render_player()
 
-            # if computer or wire block added/deleted
-            for c in self.computers:
-                c.update_network(self.world, self.computers)
+            if network_change:
+                chilog("\n")
+                for c in self.computers:
+                    c.update_network(self.world, self.computers)
+                    chilog("{}\n".format(c.port_table))
 
-            # for c in self.computers:
-            #     c.broadcast_all()
+            for c in self.computers:
+                c.broadcast_all()
 
             self.stdscr.refresh()
             time.sleep(.01)
