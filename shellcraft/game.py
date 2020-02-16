@@ -3,6 +3,7 @@ from . import blocks, computer, player, world
 import time
 import copy
 import math
+
 class Game:
 
     def __init__(self):
@@ -102,20 +103,42 @@ class Game:
         """
         Swap blocks
         """
-        if (c == ord(' ')):
+
+        # Debug
+        debug = False
+
+        if (c == ord(' ') and debug):
             chilog("Y: " + str(self.player.y) + " X: " + str(self.player.x))
-        if (c == ord('d')): # Move Right
-            if (self.move_right_legal()):
+
+        # Movement 
+        elif (c == ord('d')): # Move Right
+            if (self.move_right_legal() or debug):
                 self.player.x += 1
-        if (c == ord('a')): # Move Left
-            if (self.move_left_legal()):
+        elif (c == ord('a')): # Move Left
+            if (self.move_left_legal() or debug):
                 self.player.x -= 1
-        if (c == ord('w')): # Move Up
-            if (self.move_up_legal()):
+        elif (c == ord('w')): # Move Up
+            if (self.move_up_legal() or debug):
                 self.player.y -= 1
-        if (c==ord('s')): #Move Down 
-            if (self.move_down_legal()):
+        elif (c == ord('s')): #Move Down 
+            if (self.move_down_legal() or debug):
                 self.player.y += 1
+
+        # Block placement
+        elif (c == ord('l')): #Place block right
+            if (self.place_right_legal()):
+                self.place_block_right()
+
+
+        # Inventory 
+        elif (c == ord('1')): # Inventory 1
+            self.player.item = "DIRT"
+        elif (c == ord('2')): # Inventory 1
+            self.player.item = "COMP"
+        elif (c == ord('3')): # Inventory 1
+            self.player.item = "WIRE_LRTB"
+        elif (c == ord('4')): # Inventory 2
+            self.player.item = "STONE"
 
     def render_player(self):
         h, w = self.stdscr.getmaxyx()
