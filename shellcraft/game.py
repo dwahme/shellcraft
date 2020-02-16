@@ -98,7 +98,20 @@ class Game:
 
     def handle_player_move(self, c):
         """
-        Swap blocks
+        PLAYER CONTROLS:
+
+        W - MOVE UP
+        S - MOVE DOWN
+        A - MOVE LEFT
+        D - MOVE RIGHT
+
+        X - TOGGLE ACTION BREAK 
+        Z - TOGGLE ACTION PLACE 
+
+        I - PLACE/BREAK BLOCK UP
+        J - PLACE/BREAK BLOCK LEFT
+        K - PLACE/BREAK BLOCK DOWN
+        L - PLACE/BREAK BLOCK RIGHT
         """
 
         # Debug
@@ -106,6 +119,12 @@ class Game:
 
         if (c == ord(' ') and debug):
             chilog("Y: " + str(self.player.y) + " X: " + str(self.player.x))
+
+        elif (c == ord('z')): #Placeing mode 
+            self.player.action = "PLACE"
+        
+        elif (c == ord('x')):
+            self.player.action = "BREAK"
 
         # Movement 
         elif (c == ord('d')): # Move Right
@@ -121,11 +140,34 @@ class Game:
             if (self.move_down_legal() or debug):
                 self.player.y += 1
 
-        # Block placement
+        # Block action
         elif (c == ord('l')): #Place block right
-            if (self.place_right_legal()):
-                self.place_block_right()
+            if (self.player.action == "PLACE"):
+                if (self.place_right_legal()):
+                    self.place_block_right()
+            if (self.player.action == "BREAK"):
+                self.break_block_right()
 
+        elif (c == ord('j')): #Place block right
+            if (self.player.action == "PLACE"):
+                if (self.place_left_legal()):
+                    self.place_block_left()
+            if (self.player.action == "BREAK"):
+                self.break_block_left()
+
+        elif (c == ord('i')): #Place block right
+            if (self.player.action == "PLACE"):
+                if (self.place_up_legal()):
+                    self.place_block_up()
+            if (self.player.action == "BREAK"):
+                self.break_block_up()
+
+        elif (c == ord('k')): #Place block right
+            if (self.player.action == "PLACE"):
+                if (self.place_down_legal()):
+                    self.place_block_down()
+            if (self.player.action == "BREAK"):
+                self.break_block_down()
 
         # Inventory 
         elif (c == ord('1')): # Inventory 1
@@ -146,6 +188,8 @@ class Game:
         # return int(math.ceil(x / 10.0)) * 10
         return base * round(x/base)
 
+
+    # Movement Legality 
     def move_down_legal(self):
         # Checks what's below the player 
         block_below = self.get_block_from_pos(self.player.y + 1, self.player.x)
@@ -176,6 +220,64 @@ class Game:
         else:
             return False
 
+
+    # Block placement legality 
+    def place_right_legal(self): 
+        block_type = self.get_block_from_pos(self.player.y, self.player.x + 1).blocktypestr
+        if (block_type == "AIR" or block_type == "WATER"):
+            return True
+        else:
+            return False
+
+    def place_left_legal(self): 
+        block_type = self.get_block_from_pos(self.player.y, self.player.x - 1).blocktypestr
+        if (block_type == "AIR" or block_type == "WATER"):
+            return True
+        else:
+            return False
+
+    def place_up_legal(self): 
+        block_type = self.get_block_from_pos(self.player.y - 1, self.player.x).blocktypestr
+        if (block_type == "AIR" or block_type == "WATER"):
+            return True
+        else:
+            return False
+
+    def place_down_legal(self): 
+        block_type = self.get_block_from_pos(self.player.y + 1, self.player.x + 1).blocktypestr
+        if (block_type == "AIR" or block_type == "WATER"):
+            return True
+        else:
+            return False
+
+
+    # Block placement functionality 
+    def place_block_right(self): 
+        self.world.map[self.player.y][self.player.x + 1] = blocks.Block(self.player.item, self.stdscr, self.player.y, self.player.x + 1)
+
+    def place_block_left(self): 
+        self.world.map[self.player.y][self.player.x - 1] = blocks.Block(self.player.item, self.stdscr, self.player.y, self.player.x - 1)
+
+    def place_block_up(self): 
+        self.world.map[self.player.y - 1][self.player.x] = blocks.Block(self.player.item, self.stdscr, self.player.y - 1, self.player.x)
+
+    def place_block_down(self): 
+        self.world.map[self.player.y + 1][self.player.x] = blocks.Block(self.player.item, self.stdscr, self.player.y + 1, self.player.x)
+
+
+    # Block deletion functionality 
+    def break_block_right(self):
+        self.world.map[self.player.y][self.player.x + 1] = blocks.Block("AIR", self.stdscr, self.player.y, self.player.x + 1)
+
+    def break_block_left(self):
+        self.world.map[self.player.y][self.player.x - 1] = blocks.Block("AIR", self.stdscr, self.player.y, self.player.x - 1)
+
+    def break_block_up(self):
+        self.world.map[self.player.y - 1][self.player.x] = blocks.Block("AIR", self.stdscr, self.player.y - 1, self.player.x)
+
+    def break_block_down(self):
+        self.world.map[self.player.y + 1][self.player.x] = blocks.Block("AIR", self.stdscr, self.player.y + 1, self.player.x)
+    
 
 def chilog(msg):
     f = open("debug.txt", "w")
