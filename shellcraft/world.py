@@ -1,6 +1,7 @@
 from . import blocks
 import math
 import random
+import time
 
 class World:
 
@@ -323,7 +324,7 @@ class World:
 
         Then, if the LEFT, RIGHT, BOTTOM blocks are air, call coalesce on them too
         """
-        if (y < 0 or y >= World.max_y) :
+        if (y < 0 or y + 1 >= World.max_y) :
             return
         block_top_type = self.get_block_from_pos(y - 1, x).blocktypestr
         block_left_type = self.get_block_from_pos(y, x - 1).blocktypestr

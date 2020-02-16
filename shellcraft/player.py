@@ -92,7 +92,7 @@ class Player:
                 self.interact_block(dir_tuple, world, stdscr, game.computers)
 
         # Inventory 
-        elif (c == ord('1') or c == ord('2') or c == ord('3') or c == ord('4')):
+        elif (c in [ord(n) for n in items.keys()]):
             self.item = items[chr(c)]
 
         return ret
