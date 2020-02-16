@@ -1,5 +1,5 @@
 import curses
-from . import player, world, blocks
+from . import blocks, computer, player, world
 import time
 import copy
 
@@ -9,6 +9,7 @@ class Game:
         self.player = player.Player()
         self.world = None
         self.stdscr = None
+        self.computers = []
 
     def render_world(self):
         h, w = self.stdscr.getmaxyx()
@@ -38,6 +39,8 @@ class Game:
         self.player.y, self.player.x = self.world.spawn()
         
 
+        comp = computer.Computer("hello", blocks.Block("COMP", self.stdscr))
+
         while (True):
             c = stdscr.getch()
 
@@ -49,9 +52,21 @@ class Game:
 
             self.handle_player_move(c)
 
-            self.render_world()
+            
+            if c == 114: # r
+                comp.run()
+            if c == 101: # e
+                comp.editor(self.stdscr)
+            else:
+                self.render_world()
+                self.render_player()
 
-            self.render_player()
+            # if computer or wire block added/deleted
+            for c in self.computers:
+                c.update_ports(self.world)
+
+            if comp.process != None:
+                print(comp.read_port(2))
 
             self.stdscr.refresh()
             time.sleep(.05)
