@@ -89,14 +89,15 @@ class Game:
             self.render_world()
             self.render_player()
 
+
+            if event == Event.MONITOR_CHANGE:
+                self.monitors = monitor.Monitor.aggregate_monitors(self.monitors)
+                
             if event == Event.COMPUTER_CHANGE or event == Event.MONITOR_CHANGE:
-                iomonitors = [io for m in self.monitors for io in m]
+                iomonitors = [io for m in self.monitors for io in m.blocks]
 
                 for c in self.computers:
                     c.update_network(self.world, self.computers + iomonitors)
-
-            elif event == Event.MONITOR_CHANGE:
-                self.monitors = monitor.Monitor.aggregate_monitors(self.monitors)
 
             for c in self.computers:
                 c.broadcast_all()
