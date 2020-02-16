@@ -182,6 +182,9 @@ class Computer:
             elif block.blocktypestr == "COMP":
                 found_ports.append((y, x, port))
 
+            elif block.blocktypestr == "MONITOR":
+                found_ports.append((y, x, port))
+
 
         return [(Computer.find_computer(computers, y, x), p) for (y, x, p) in found_ports]
 

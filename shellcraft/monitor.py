@@ -20,6 +20,15 @@ class Monitor:
 
         return min_y, max_y, min_x, max_x
 
+    def generate_iomonitors(self):
+        ios = []
+
+        for b in self.blocks:
+            IOMonitor(b, self)
+
+        return ios
+
+
     def in_bounds(self, y, x):
         return (y, x) in [b.coords() for b in self.blocks]
 
@@ -48,7 +57,6 @@ class Monitor:
                 self.text.append(sub)
             
         self.text = self.text[-(bot - 2):-1]
-
 
     def render(self, stdscr, y, x):
         if self.is_rectangle():
@@ -146,4 +154,11 @@ class Monitor:
         return new_monitors
 
 
+class IOMonitor:
 
+    def __init__(self, block, parent):
+        self.block = block
+        self.parent = parent
+
+    def send_port(self, port, data):
+        return monitor.write(data)
