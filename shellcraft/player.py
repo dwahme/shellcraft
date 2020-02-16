@@ -212,20 +212,39 @@ class Player:
             
     
     def blow_up(self, world, stdscr, y, x):
-        destroy_list = []
-        for a in range (-2, 2):
-            for b in range(-3, 3):
-                destroy_list.append((a, b))
+        destroy_list = [(0, 0), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (1, -2), (0, -2), (-1, -2), (-2, -2), (-2, -1), (-2, 0),
+                        (-2, 1), (-2, 2), (-1, 2), (0, 2), (1, 2), (2, 2), (2, 1), (2, 0), (2, -1), (2, -2), (1, -2), (0, -3), (1, -3), (-1, -3), (2, -3), (-2, -3),
+                        (0, 3), (1, 3), (-1, 3), (2, 3), (-2, 3)]
+        #for a in range (-2, 2):
+        #    for b in range(-3, 3):
+        #        destroy_list.append((a, b))
         # destroy_list = [(0, -2), (0, -1), (0, 0), (0, 1), (0, 2), (-1, -2), (-1, -1), (-1, 0), (-1, 1), (-1, 2), (1, -2), (1, -1), (1, 0), (1, 1), (1, 2)]
+        
+        skip_list = set()
         for (dy, dx) in destroy_list:
             new_y = y + dy 
             new_x = (x + dx) % world.max_x
             if (new_y >= world.max_y):
                 continue
+            elif ((dy, dx) in skip_list) :
+                continue
+            
             existing_block_type = world.map[new_y][new_x].blocktypestr
-
-            if (existing_block_type == "TNT" and (dy, dx) != (0, 0)):
+            if (existing_block_type == "WATER" and (dy, dx) != (0, 0)):
+                i = abs(dx)
+                add_x = dx
+                while(i < 4) :
+                    j = abs(dy)
+                    add_y = dy
+                    while(j < 3) :
+                        skip_list.add((add_y, add_x))
+                        j += 1
+                        add_y = round(add_y * 2)
+                    i += 1
+                    add_x = round(add_x * 1.5)
+            elif (existing_block_type == "TNT" and (dy, dx) != (0, 0)):
                 self.blow_up(world, stdscr, new_y, new_x)
-            if (existing_block_type != "BEDROCK" and existing_block_type != "CLOUD"):
+            elif (existing_block_type != "BEDROCK" and existing_block_type != "CLOUD"):
                 world.map[new_y][new_x] = blocks.Block("AIR", stdscr, new_y, new_x)
+                
 

@@ -11,8 +11,9 @@ from .utils.chilog import chilog
 
 class Game:
 
-    def __init__(self, editor):
+    def __init__(self, editor, seed):
         self.player = player.Player()
+        self.seed = seed
         self.world = None
         self.stdscr = None
         self.computers = []
@@ -82,7 +83,7 @@ class Game:
         self.stdscr.clear()
         curses.curs_set(0)
 
-        self.world = world.World(self.stdscr)
+        self.world = world.World(self.stdscr, self.seed)
         self.world.generate()
         self.player.y, self.player.x = self.world.spawn()
 
