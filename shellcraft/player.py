@@ -73,14 +73,14 @@ class Player:
             self.action = "INTERACT"
 
         # Movement 
-        elif (c == ord('d') or c == ord('a') or c == ord('w') or c == ord('s')):
+        elif (c in [ord(s) for s in ['d', 'a', 'w', 's']]):
             dir_tuple = dir[chr(c)]
             if (self.move_legal(dir_tuple, world) or debug):
                 self.x += dir_tuple[1]
                 self.y += dir_tuple[2]
             
         # Block action
-        elif (c == ord('i') or c == ord('j') or c == ord('k') or c == ord('l')):
+        elif (c in [ord(s) for s in ['i', 'j', 'k', 'l']]):
             dir_tuple = dir[chr(c)]
             if (self.action == "PLACE"):
                 if (self.place_legal(dir_tuple, world)):
