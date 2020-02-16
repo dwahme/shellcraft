@@ -2,7 +2,7 @@ import curses
 from . import blocks, computer, player, world
 import time
 import copy
-
+import math
 class Game:
 
     def __init__(self):
@@ -17,9 +17,11 @@ class Game:
         p_y, p_x = self.player.coords()
         # p_x %= world.World.max_x
         # p_y %= world.World.max_y
+        p_y *= 3
+        p_x *= 5
 
         
-        screen_start = (max(p_y  - h // 2, 0 ), (p_x)  - w // 2)
+        screen_start = (p_y - h // 2, (p_x) - w // 2)
                 
 
         for y in range(0, h - 2, 3):
@@ -39,7 +41,7 @@ class Game:
         self.player.y, self.player.x = self.world.spawn()
         
 
-        comp = computer.Computer("hello", blocks.Block("COMP", self.stdscr, 20, 30))
+        comp = computer.Computer("hello", blocks.Block("COMP", self.stdscr, 15, 250))
 
         while (True):
             c = stdscr.getch()
@@ -69,7 +71,7 @@ class Game:
                 print(comp.read_port(2))
 
             self.stdscr.refresh()
-            time.sleep(.05)
+            time.sleep(.01)
 
     # Actually runs the game
     def run(self):
@@ -80,18 +82,19 @@ class Game:
         Swap blocks
         """
         if (c == ord('d')): # Move Right
-            self.player.x += 5
+            self.player.x += 1
         if (c == ord('a')): # Move Left
-            self.player.x -= 5
+            self.player.x -= 1
         if (c == ord('w')): 
-            self.player.y -= 3
+            self.player.y -= 1
         if (c==ord('s')):
-            self.player.y += 3
+            self.player.y += 1
 
     def render_player(self):
         h, w = self.stdscr.getmaxyx()
         playerblock = blocks.Block("PLAYER", self.stdscr, self.player.y * 3, self.player.x)
-        playerblock.draw((h - 3) // 2, (w - 5) // 2)
+        playerblock.draw(self.roundbase(h // 2, 3), self.roundbase(w, 10) // 2) # magic, dont touch
 
-        # playerblock.draw(self.player.y * 3, self.player.x)
-            
+    def roundbase(self, x, base):
+        # return int(math.ceil(x / 10.0)) * 10
+        return base * round(x/base)
