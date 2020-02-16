@@ -92,7 +92,8 @@ class Player:
 
     # Movement Legality     
     def move_legal(self, dir_tuple, world):
-        blocktype = world.get_block_from_pos(self.y + dir_tuple[2], self.x + dir_tuple[1]).blocktypestr
+        new_x = (self.x + dir_tuple[1]) % world.max_x
+        blocktype = world.get_block_from_pos(self.y + dir_tuple[2], new_x).blocktypestr
 
         if (blocktype == "WATER" or blocktype == "AIR" or "WIRE" in blocktype):
             return True 
@@ -102,7 +103,8 @@ class Player:
 
     # Block placement legality 
     def place_legal(self, dir_tuple, world):
-        blocktype = world.get_block_from_pos(self.y + dir_tuple[2], self.x + dir_tuple[1]).blocktypestr
+        new_x = (self.x + dir_tuple[1]) % world.max_x
+        blocktype = world.get_block_from_pos(self.y + dir_tuple[2], new_x).blocktypestr
 
         if (blocktype == "WATER" or blocktype == "AIR"):
             return True 
@@ -110,8 +112,9 @@ class Player:
             return False 
 
     def place_block(self, dir_tuple, world, stdscr, game):
-        b = blocks.Block(self.item, stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
-        world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = b
+        new_x = (self.x + dir_tuple[1]) % world.max_x
+        b = blocks.Block(self.item, stdscr, self.y + dir_tuple[2], new_x)
+        world.map[self.y + dir_tuple[2]][new_x] = b
 
         if b.blocktypestr == "COMP":
             c = computer.Computer(str(len(game.computers)), b)
@@ -126,5 +129,6 @@ class Player:
         return 0
 
     def break_block(self, dir_tuple, world, stdscr):
-        world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
-        world.coalesce_water(self.y + dir_tuple[2], self.x + dir_tuple[1])
+        new_x = (self.x + dir_tuple[1]) % world.max_x
+        world.map[self.y + dir_tuple[2]][new_x] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], new_x)
+        world.coalesce_water(self.y + dir_tuple[2], new_x)
