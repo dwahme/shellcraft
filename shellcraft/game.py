@@ -6,6 +6,7 @@ import math
 import os
 from pathlib import Path
 from .enums.direction import Direction
+from .enums.event import Event
 from .utils.chilog import chilog
 
 class Game:
@@ -17,11 +18,12 @@ class Game:
         self.computers = []
         self.frame_count = 0
         # self.monsters = []
+        self.monitors = []
 
         # Set the default editor
         computer.Computer.EDITOR = editor
 
-    def render_world(self):
+    def coord_convert(self, y, x):
         h, w = self.stdscr.getmaxyx()
 
         p_y, p_x = self.player.coords()
@@ -30,9 +32,25 @@ class Game:
         
         screen_start = (p_y - h // 2, (p_x) - w // 2)
 
+        return (screen_start[0] + y) // 3, ((screen_start[1] + x) // 5) % self.world.max_x
+
+
+    def render_world(self):
+        h, w = self.stdscr.getmaxyx()
+
         for y in range(0, h - 2, 3):
             for x in range(0, w - 5, 5):
-                ret = self.world.draw(y, x, (screen_start[0] + y) // 3, (screen_start[1] + x) // 5)
+                new_y, new_x = self.coord_convert(y, x)
+                drawn = False
+
+                for m in self.monitors:
+                    if m.in_bounds(new_y, new_x) and m.is_rectangle():
+                        if (new_y, new_x) == m.blocks[0].coords():
+                            m.render(self.stdscr, y, x)
+                        drawn = True
+
+                if not drawn:
+                    self.world.draw(y, x, new_y, new_x)
 
     player_block_type = {
         "NORMAL": "PLAYERNORMAL",
@@ -87,18 +105,22 @@ class Game:
             # preferably some dispatch function?
             # NOTE THAT PLAYER Y VALUE DOES NOT WRAP (BUT X DOES)
 
-            network_change = self.player.handle_player_move(c, self.world, self.stdscr, self)
+            event = self.player.handle_player_move(c, self.world, self.stdscr, self)
 
             self.render_world()
             self.render_player()
             self.render_physics()
             # self.render_monsters()
 
-            if network_change:
-                chilog("\n")
+
+            if event == Event.MONITOR_CHANGE:
+                self.monitors = monitor.Monitor.aggregate_monitors(self.monitors)
+                
+            if event == Event.COMPUTER_CHANGE or event == Event.MONITOR_CHANGE:
+                iomonitors = [io for m in self.monitors for io in m.blocks]
+
                 for c in self.computers:
-                    c.update_network(self.world, self.computers)
-                    chilog("{}\n".format(c.port_table))
+                    c.update_network(self.world, self.computers + iomonitors)
 
             for c in self.computers:
                 c.broadcast_all()
@@ -110,8 +132,8 @@ class Game:
     # Actually runs the game
     def run(self):
         # Prepare for logging and program files
-        if os.path.exists("demofile.txt"):
-            os.remove("demofile.txt")
+        if os.path.exists("log.txt"):
+            os.remove("log.txt")
         Path("./computer_files").mkdir(parents=True, exist_ok=True)
 
         # Run the game

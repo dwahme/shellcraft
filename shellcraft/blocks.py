@@ -901,6 +901,10 @@ class Block:
 
         # self.screen.addstr(self.locX, self.locY, str(self.blocktype.blocks), curses.color_pair(9))
     
+    @property
+    def coord_prop(self):
+        return self.y, self.x
+
     def coords(self):
         return self.y, self.x
 
