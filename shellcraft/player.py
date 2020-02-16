@@ -1,5 +1,7 @@
 from .enums.direction import Direction
 from . import blocks
+from .utils.chilog import chilog
+
 class Player:
 
     def __init__(self):
@@ -13,7 +15,7 @@ class Player:
         return self.y, self.x
 
     def handle_player_move(self, c, world, stdscr):
-        
+        chilog('1')
         """
         PLAYER CONTROLS:
 

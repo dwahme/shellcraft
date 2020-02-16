@@ -4,6 +4,7 @@ import time
 import copy
 import math
 from .enums.direction import Direction
+from .utils.chilog import chilog
 
 class Game:
 
@@ -108,8 +109,3 @@ class Game:
     def roundbase(self, x, base):
         # return int(math.ceil(x / 10.0)) * 10
         return base * round(x/base)
-
-def chilog(msg):
-    f = open("debug.txt", "w")
-    f.write(msg)
-    f.close()
