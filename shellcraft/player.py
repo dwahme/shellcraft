@@ -32,6 +32,7 @@ class Player:
         K - PLACE/BREAK BLOCK DOWN
         L - PLACE/BREAK BLOCK RIGHT
         """
+        ret = 0
 
         # Debug
         debug = False
@@ -63,28 +64,28 @@ class Player:
         elif (c == ord('l')): #Place block right
             if (self.action == "PLACE"):
                 if (self.place_legal(Direction.RIGHT, world)):
-                    self.place_block(Direction.RIGHT, world, stdscr, game)
+                    ret = self.place_block(Direction.RIGHT, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(Direction.RIGHT, world, stdscr)
 
         elif (c == ord('j')): #Place block right
             if (self.action == "PLACE"):
                 if (self.place_legal(Direction.LEFT, world)):
-                    self.place_block(Direction.LEFT, world, stdscr, game)
+                    ret = self.place_block(Direction.LEFT, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(Direction.LEFT, world, stdscr)
 
         elif (c == ord('i')): #Place block right
             if (self.action == "PLACE"):
                 if (self.place_legal(Direction.TOP, world)):
-                    self.place_block(Direction.TOP, world, stdscr, game)
+                    ret = self.place_block(Direction.TOP, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(Direction.TOP, world, stdscr)
 
         elif (c == ord('k')): #Place block right
             if (self.action == "PLACE"):
                 if (self.place_legal(Direction.BOTTOM, world)):
-                    self.place_block(Direction.BOTTOM, world, stdscr, game)
+                    ret = self.place_block(Direction.BOTTOM, world, stdscr, game)
             if (self.action == "BREAK"):
                 self.break_block(Direction.BOTTOM, world, stdscr)
 
@@ -97,6 +98,8 @@ class Player:
             self.item = "WIRE_LRTB"
         elif (c == ord('4')): # Inventory 2
             self.item = "STONE"
+
+        return ret
 
     
 
@@ -151,9 +154,16 @@ class Player:
             world.map[self.y - 1][self.x] = b
 
         if b.blocktypestr == "COMP":
-            chilog("{}".format(b.coords()))
             c = computer.Computer(str(len(game.computers)), b)
             game.computers.append(c)
+            # c.editor(game.stdscr)
+
+            return 1
+
+        elif "WIRE" in b.blocktypestr:
+            return 1
+
+        return 0
 
     def break_block(self, dir, world, stdscr):
         if (dir == Direction.LEFT):
