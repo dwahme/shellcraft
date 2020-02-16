@@ -234,12 +234,8 @@ class World:
         Returns initial player coordinate
         """
 
-        return 0,0
-        # for y in range(World.max_y):
-        #     if self.map[y][World.max_x//2].type() == "DIRTGRASS":
-        #         return y-1, World.max_x//2
-            
-        # return 0, 0
+        return 6,0
+
 
 
     # Safely draws a block at a given position
@@ -252,3 +248,9 @@ class World:
             return 0
         
         return -1
+
+    def get_block_from_pos(self, y, x): 
+        """
+        y, x: index of block
+        """
+        return self.map[y][x % World.max_x] # wraping
