@@ -45,8 +45,6 @@ class World:
             self.map.append(tmp)
 
         self.map[0][0] = blocks.Block("ZEROZERO", self.stdscr, 0, 0)
-        self.map[0][1] = blocks.Block("ZEROONE", self.stdscr, 0, 1)
-        self.map[1][0] = blocks.Block("ONEZERO", self.stdscr, 1, 0)
 
          # Lake generation
        
@@ -149,10 +147,6 @@ class World:
                     break
                 right_ground = right_water
                 prob = prob * prob
-       
-        # Initial computer generation
-        self.map[0][0] = blocks.Block("COMP", self.stdscr, 0, 0)
-
 
 
     def convert_lake(self, y, x, prob, limit, checked) :
@@ -249,6 +243,8 @@ class World:
         """
         y, x: index of block
         """
+        if (y < 0 or y >= World.max_y):
+            return None
         return self.map[y][x % World.max_x] # wraping
 
     def coalesce_water(self, y, x):
@@ -260,22 +256,22 @@ class World:
 
         Then, if the LEFT, RIGHT, BOTTOM blocks are air, call coalesce on them too
         """
+        if (y < 0 or y >= World.max_y) :
+            return
+
         block_top_type = self.get_block_from_pos(y - 1, x).blocktypestr
         block_left_type = self.get_block_from_pos(y, x - 1).blocktypestr
         block_right_type = self.get_block_from_pos(y, x + 1).blocktypestr
         
         if (block_top_type == "WATER" or block_left_type == "WATER" or block_right_type == "WATER"):
-            self.map[y][x % World.max_x] = blocks.Block("WATER", self.stdscr, y, x)
+            self.map[y][x % World.max_x] = blocks.Block("WATER", self.stdscr, y, x % World.max_x)
             next_block_left_type = self.get_block_from_pos(y, x - 1).blocktypestr
             next_block_right_type = self.get_block_from_pos(y, x + 1).blocktypestr
             next_block_bottom_type = self.get_block_from_pos(y + 1, x).blocktypestr
 
             if (next_block_left_type == "AIR"):
-                self.coalesce_water(y, x - 1)
-            elif (next_block_right_type == "AIR"):
-                self.coalesce_water(y, x + 1)
-            elif (next_block_bottom_type == "AIR"):
-                self.coalesce_water(y + 1, x)
-
-
-        
+                self.coalesce_water(y, (x - 1) % World.max_x)
+            if (next_block_right_type == "AIR"):
+                self.coalesce_water(y, (x + 1) % World.max_x)
+            if (next_block_bottom_type == "AIR"):
+                self.coalesce_water(y + 1, x % World.max_x)
