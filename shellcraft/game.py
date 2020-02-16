@@ -19,14 +19,33 @@ class Game:
         # p_y %= world.World.max_y
         p_y *= 3
         p_x *= 5
-
         
         screen_start = (p_y - h // 2, (p_x) - w // 2)
-                
 
         for y in range(0, h - 2, 3):
             for x in range(0, w - 5, 5):
-                ret = self.world.draw(y, x, (screen_start[0] + y) // 3 , (screen_start[1] + x) // 5)
+                ret = self.world.draw(y, x, (screen_start[0] + y) // 3, (screen_start[1] + x) // 5)
+
+    # def get_block_from_screen_pos(self, y, x):
+    #     """
+    #     y, x is the map's indexing of the various blocks, not the pixel coordinates
+    #     """
+    #     h, w = self.stdscr.getmaxyx()
+    #     p_y, p_x = self.player.coords()
+    #     p_y *= 3
+    #     p_x *= 5
+    #     screen_start = (p_y - h // 2, (p_x) - w // 2)
+    #     block_y = (screen_start[0] + y) // 3
+    #     block_x = (screen_start[1] + x) // 5
+    #     block = self.world.map[block_y][block_x % self.world.max_x]
+
+    #     return block
+
+    def get_block_from_pos(self, y, x): 
+        """
+        y, x: index of block
+        """
+        return self.world.map[y][x % self.world.max_x] # wraping
 
     # The main game loop, use run() instead
     def __main(self, stdscr):
@@ -39,7 +58,6 @@ class Game:
         self.world = world.World(self.stdscr)
         self.world.generate()
         self.player.y, self.player.x = self.world.spawn()
-        
 
         comp = computer.Computer("hello", blocks.Block("COMP", self.stdscr, 15, 250))
 
@@ -81,20 +99,62 @@ class Game:
         """
         Swap blocks
         """
+        if (c == ord(' ')):
+            chilog("Y: " + str(self.player.y) + " X: " + str(self.player.x))
         if (c == ord('d')): # Move Right
-            self.player.x += 1
+            if (self.move_right_legal()):
+                self.player.x += 1
         if (c == ord('a')): # Move Left
-            self.player.x -= 1
-        if (c == ord('w')): 
-            self.player.y -= 1
-        if (c==ord('s')):
-            self.player.y += 1
+            if (self.move_left_legal()):
+                self.player.x -= 1
+        if (c == ord('w')): # Move Up
+            if (self.move_up_legal()):
+                self.player.y -= 1
+        if (c==ord('s')): #Move Down 
+            if (self.move_down_legal()):
+                self.player.y += 1
 
     def render_player(self):
         h, w = self.stdscr.getmaxyx()
-        playerblock = blocks.Block("PLAYER", self.stdscr, self.player.y * 3, self.player.x)
+        playerblock = blocks.Block("PLAYER", self.stdscr, self.player.y, self.player.x)
         playerblock.draw(self.roundbase(h // 2, 3), self.roundbase(w, 10) // 2) # magic, dont touch
 
     def roundbase(self, x, base):
         # return int(math.ceil(x / 10.0)) * 10
         return base * round(x/base)
+
+    def move_down_legal(self):
+        # Checks what's below the player 
+        block_below = self.get_block_from_pos(self.player.y + 1, self.player.x)
+
+        if (block_below.blocktypestr == "WATER" or block_below.blocktypestr == "AIR"):
+            return True
+        else:
+            return False
+
+    def move_right_legal(self):
+        block_right_type = self.get_block_from_pos(self.player.y, self.player.x + 1).blocktypestr
+        if (block_right_type == "WATER" or block_right_type == "AIR"):
+            return True
+        else:
+            return False
+
+    def move_left_legal(self):
+        block_left_type = self.get_block_from_pos(self.player.y, self.player.x - 1).blocktypestr
+        if (block_left_type == "WATER" or block_left_type == "AIR"):
+            return True
+        else:
+            return False
+
+    def move_up_legal(self):
+        block_up_type = self.get_block_from_pos(self.player.y - 1, self.player.x).blocktypestr
+        if (block_up_type == "WATER" or block_up_type == "AIR"):
+            return True
+        else:
+            return False
+
+
+def chilog(msg):
+    f = open("debug.txt", "w")
+    f.write(msg)
+    f.close()
