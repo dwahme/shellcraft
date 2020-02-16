@@ -26,8 +26,6 @@ class Monitor:
         for b in self.blocks:
             ios.append(IOMonitor(b, self))
 
-        chilog("IOS: {}".format(ios))
-
         return ios
 
 
@@ -49,16 +47,23 @@ class Monitor:
         return top, left, bot, right
 
     def write(self, txt):
+        chilog("Monitor writing: {}".format(txt))
+
         top, left, bot, right = self.box_bounds()
         
         lines = txt.split("\n")
 
+        chilog("lines: {}".format(lines))
         for line in lines:
             sublines = [line[i:i + (right - 2)] for i in range(0, len(line), (right - 2))]
+            chilog("sublines: {}".format(sublines))
             for sub in sublines:
                 self.text.append(sub)
-            
-        self.text = self.text[-(bot - 2):-1]
+        
+        chilog("Text before: {}".format(self.text))
+        self.text = self.text[-(bot):]
+
+        chilog("Monitor text buffer: {}".format(self.text))
 
     def render(self, stdscr, y, x):
         if self.is_rectangle():
@@ -75,6 +80,8 @@ class Monitor:
                 if len(self.text) >= j:
                     t = self.text[j - 1]
                     s = t + s[len(t):]
+                
+                # chilog("Rendering: {}".format(s))
                 
                 stdscr.addstr(y + j, x + 1, s)
 
@@ -163,5 +170,5 @@ class IOMonitor:
         self.parent = parent
 
     def send_port(self, port, data):
-        chilog("IO- sending to parent: " + data)
+        chilog("Recieved on {}: {}".format(port, data))
         return self.parent.write(data)

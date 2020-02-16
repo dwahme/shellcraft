@@ -141,7 +141,7 @@ class Computer:
         return None
 
     # Performs BFS across wires given a starting point and adds computers to queue
-    def __update_network(self, world, computers, start):
+    def update_network_helper(self, world, computers, start):
         y, x, _ = start
         x %= world.max_x
         
@@ -195,10 +195,10 @@ class Computer:
     def update_network(self, world, computers):
         y, x = self.block.coords()
 
-        self.port_table[Port.RIGHT] = self.__update_network(world, computers, (y, x + 1, Port.LEFT))
-        self.port_table[Port.BOTTOM] = self.__update_network(world, computers, (y + 1, x, Port.TOP))
-        self.port_table[Port.LEFT] = self.__update_network(world, computers, (y, x - 1, Port.RIGHT))
-        self.port_table[Port.TOP] = self.__update_network(world, computers, (y - 1, x, Port.BOTTOM))
+        self.port_table[Port.RIGHT] = self.update_network_helper(world, computers, (y, x + 1, Port.LEFT))
+        self.port_table[Port.BOTTOM] = self.update_network_helper(world, computers, (y + 1, x, Port.TOP))
+        self.port_table[Port.LEFT] = self.update_network_helper(world, computers, (y, x - 1, Port.RIGHT))
+        self.port_table[Port.TOP] = self.update_network_helper(world, computers, (y - 1, x, Port.BOTTOM))
 
         chilog("PORTS: {}".format(self.port_table))
 
@@ -232,3 +232,29 @@ class Pi(Computer):
                                   args=(self.process.stdout, self.out_ports))
         self.read_thread.daemon = True # thread dies with the program
         self.read_thread.start()
+
+
+    def broadcast(self, out_port):
+        data = self.read_port(out_port)
+
+        if data != None:
+            chilog("Sending out: " + data)
+
+            for (c, p) in self.port_table[out_port]:
+                chilog("Sent to {} at {}: through {}: {}".format(c, p, out_port, data))
+                c.send_port(p, data)
+
+    def broadcast_all(self):
+        for port in self.port_table.keys():
+            self.broadcast(port)
+
+    # Finds the networks across each port
+    def update_network(self, world, computers):
+        y, x = self.block.coords()
+
+        self.port_table[Port.RIGHT] = super().update_network_helper(world, computers, (y, x + 1, Port.LEFT))
+        self.port_table[Port.RIGHT] += super().update_network_helper(world, computers, (y + 1, x, Port.TOP))
+        self.port_table[Port.RIGHT] += super().update_network_helper(world, computers, (y, x - 1, Port.RIGHT))
+        self.port_table[Port.RIGHT] += super().update_network_helper(world, computers, (y - 1, x, Port.BOTTOM))
+
+        chilog("PORTS: {}".format(self.port_table))

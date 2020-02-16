@@ -102,9 +102,8 @@ class Game:
 
             if event == Event.COMPUTER_CHANGE or event == Event.MONITOR_CHANGE:
                 iomonitors = [io for m in self.monitors for io in m.generate_iomonitors()]
-                chilog("TOTALIO: {}".format(iomonitors))
 
-                for c in self.computers:
+                for c in self.computers + self.pis:
                     c.update_network(self.world, self.computers + self.pis + iomonitors)
 
             for c in self.computers + self.pis:
