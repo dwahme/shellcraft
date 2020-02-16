@@ -39,7 +39,7 @@ class Game:
         self.player.y, self.player.x = self.world.spawn()
         
 
-        comp = computer.Computer("hello", blocks.Block("COMP", self.stdscr))
+        comp = computer.Computer("hello", blocks.Block("COMP", self.stdscr, 20, 30))
 
         while (True):
             c = stdscr.getch()

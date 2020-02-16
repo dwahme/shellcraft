@@ -1,7 +1,14 @@
 import curses
+from enum import Enum
 from queue import Queue, Empty
 from subprocess import Popen, run, PIPE
 from threading import Thread
+
+class Port(Enum):
+    RIGHT = 0
+    BOTTOM = 1
+    LEFT = 2
+    TOP = 3
 
 
 class Computer:
@@ -69,6 +76,12 @@ class Computer:
 
         return out
 
+    def broadcast(self, out_port):
+        data = read_port(out_port)
+
+        for c in self.port_table[out_port]:
+            c.send_port
+
     # Queues data to be sent in
     def send_port(self, port, msg):
         to_send = bytes("{} {}".format(port, msg))
@@ -86,30 +99,30 @@ class Computer:
         
         while not queue.empty():
 
-            y, x = queue.get()
+            y, x, port = queue.get()
             block = world[y][x]
 
             if "WIRE" in block.blocktypestr:
                 dirs = block.blocktypestr.split("_")
 
                 if "T" in dirs and (y, x) not in checked:
-                    queue.add((y + 1, x))
-                    checked.add((y + 1, x))
-
-                if "B" in dirs and (y, x) not in checked:
-                    queue.add((y - 1, x))
+                    queue.add((y - 1, x, Port.BOTTOM))
                     checked.add((y - 1, x))
 
+                if "B" in dirs and (y, x) not in checked:
+                    queue.add((y + 1, x, Port.TOP))
+                    checked.add((y + 1, x))
+
                 if "R" in dirs and (y, x) not in checked:
-                    queue.add((y, x + 1))
+                    queue.add((y, x + 1, Port.LEFT))
                     checked.add((y, x + 1))
 
                 if "L" in dirs and (y, x) not in checked:
-                    queue.add((y, x - 1))
+                    queue.add((y, x - 1, Port.RIGHT))
                     checked.add((y, x - 1))
 
             elif block.blocktypestr == "COMP":
-                found_ports.append((y, x))
+                found_ports.append((y, x, port))
 
         return found_ports
 
@@ -117,7 +130,7 @@ class Computer:
     def update_network(self, world):
         y, x = self.block.coords()
 
-        port_table["T"] = __update_network(world, (y + 1, x))
-        port_table["B"] = __update_network(world, (y - 1, x))
-        port_table["R"] = __update_network(world, (y, x + 1))
-        port_table["L"] = __update_network(world, (y, x - 1))
+        port_table[Port.RIGHT] = __update_network(world, (y, x + 1, Port.LEFT))
+        port_table[Port.BOTTOM] = __update_network(world, (y + 1, x, , Port.TOP))
+        port_table[Port.LEFT] = __update_network(world, (y, x - 1, Port.RIGHT))
+        port_table[Port.TOP] = __update_network(world, (y - 1, x, Port.BOTTOM))
