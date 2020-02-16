@@ -94,7 +94,7 @@ class Computer:
         if self.process != None:
             self.process.communicate(input=to_send)
 
-    def find_computer(self, computers, y, x):
+    def find_computer(computers, y, x):
         for computer in computers:
             if computer.block.coords() == (y, x):
                 return computer
@@ -119,6 +119,7 @@ class Computer:
         while not queue.empty():
 
             y, x, port = queue.get()
+            x %= world.max_x
 
             block = world.map[y][x]
 
@@ -148,7 +149,7 @@ class Computer:
 
         chilog("BFS: {} {}\n".format(start, found_ports))
 
-        return [(self.find_computer(computers, y, x), p) for (y, x, p) in found_ports]
+        return [(Computer.find_computer(computers, y, x), p) for (y, x, p) in found_ports]
 
     # Finds the networks across each port
     def update_network(self, world, computers):
