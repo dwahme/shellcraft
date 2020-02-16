@@ -124,9 +124,8 @@ class Player:
         world.map[self.y + dir_tuple[2]][new_x] = b
 
         if b.blocktypestr == "COMP":
-            c = computer.Computer(str(len(game.computers)), b)
+            c = computer.Computer(b)
             game.computers.append(c)
-            # c.editor(game.stdscr)
 
             return 1
 
@@ -157,4 +156,9 @@ class Player:
 
         if (blocktype == "COMP"):
             cpu = computer.Computer.find_computer(computers, self.y + dir_tuple[2], new_x)
+
+            if cpu.name == None:
+                cpu.new_computer_prompt(stdscr)
+            
             cpu.editor(stdscr)
+            cpu.run()

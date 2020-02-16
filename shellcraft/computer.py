@@ -1,4 +1,5 @@
 import curses
+from curses.textpad import Textbox, rectangle
 from .utils.chilog import chilog
 from enum import IntEnum
 from queue import Queue, Empty
@@ -15,9 +16,9 @@ class Port(IntEnum):
 class Computer:
     CWD = "./computer_files"
     
-    def __init__(self, name, block):
-        self.name = name
-        self.run_command = "python3"
+    def __init__(self, block):
+        self.name = None
+        self.runtime = None
         self.block = block
 
         self.process = None
@@ -26,6 +27,40 @@ class Computer:
         self.out_ports = [Queue() for _ in range(4)]
 
         self.port_table = {}
+
+    def new_computer_prompt(self, stdscr):
+        # Leave the textbox on enter
+        exit_func = lambda k: 7 if k == 10 else k
+
+        h, w = 5, 30
+        term_h, term_w = stdscr.getmaxyx()
+        y, x = (term_h - h) // 2, (term_w - w) // 2
+
+        editwin = curses.newwin(h + 2, w + 2, y, x)
+        rectangle(stdscr, y - 1, x - 1, y + h + 2, x + w + 2)
+        stdscr.addstr(y - 1, x + 1, "Enter a computer name")
+        stdscr.refresh()
+
+        box = Textbox(editwin)
+
+        # Let the user edit until Ctrl-G is struck.
+        box.edit(exit_func)
+
+        # Get resulting contents
+        self.name = box.gather().strip()
+
+        editwin = curses.newwin(h + 2, w + 2, y, x)
+        rectangle(stdscr, y - 1, x - 1, y + h + 2, x + w + 2)
+        stdscr.addstr(y - 1, x + 1, "Enter a runtime command")
+        stdscr.refresh()
+
+        box = Textbox(editwin)
+
+        box.edit(exit_func)
+
+        # Get resulting contents
+        self.runtime = box.gather().strip().split()
+
 
     # Queues output from a process to be read later
     def enqueue_output(self, out, queues):
@@ -48,8 +83,8 @@ class Computer:
     # Runs a computer's file and starts queueing its output into self.out_queue
     def run(self):
         # Start the process to run the computer's program
-        self.process = Popen([self.run_command, "{}".format(self.name)], 
-                             cwd=Computer.CWD,  stdout=PIPE, stdin=PIPE)
+        self.process = Popen(self.runtime, cwd=Computer.CWD, 
+                             stdout=PIPE, stdin=PIPE)
 
         # Begin queueing the output
         self.read_thread = Thread(target=self.enqueue_output, 
