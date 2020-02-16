@@ -1,5 +1,5 @@
 import curses
-from . import blocks, computer, player, world
+from . import blocks, computer, monster, player, world
 import time
 import copy
 import math
@@ -15,6 +15,8 @@ class Game:
         self.world = None
         self.stdscr = None
         self.computers = []
+        self.frame_count = 0
+        # self.monsters = []
 
         # Set the default editor
         computer.Computer.EDITOR = editor
@@ -44,6 +46,22 @@ class Game:
         
         playerblock = blocks.Block(self.player_block_type[self.player.action], self.stdscr, self.player.y, self.player.x)
         playerblock.draw(self.roundbase(h // 2, 3), self.roundbase(w, 10) // 2) # magic, dont touch
+    
+    def render_physics(self):
+        # if the below block is water, slowly sink 
+        bottomblock = self.world.get_block_from_pos(self.player.y + 1, self.player.x)
+        if (bottomblock.blocktypestr == "WATER"):
+            if (self.frame_count % 100 == 0):
+                self.player.y += 1
+
+    # def render_monsters(self):
+    #     for monster in self.monsters:
+    #         monster.draw(self.stdscr, monster.y, monster.x)
+    #         if (self.player.x > monster.x):
+    #             monster.move(Direction.LEFT)
+    #         else:
+    #             monster.move(Direction.RIGHT)
+        
 
     # The main game loop, use run() instead
     def __main(self, stdscr):
@@ -56,6 +74,9 @@ class Game:
         self.world = world.World(self.stdscr)
         self.world.generate()
         self.player.y, self.player.x = self.world.spawn()
+        
+        # slime = monster.Monster(self.player.y, self.player.x)
+        # slime.spawn(self.monsters)
 
         while (True):
             c = stdscr.getch()
@@ -70,6 +91,8 @@ class Game:
 
             self.render_world()
             self.render_player()
+            self.render_physics()
+            # self.render_monsters()
 
             if network_change:
                 chilog("\n")
@@ -82,6 +105,7 @@ class Game:
 
             self.stdscr.refresh()
             time.sleep(.01)
+            self.frame_count = (self.frame_count + 1) % 200
 
     # Actually runs the game
     def run(self):
