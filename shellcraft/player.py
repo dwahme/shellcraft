@@ -37,6 +37,27 @@ class Player:
         # Debug
         debug = False
 
+
+        # Data 
+        dir = {
+            #'z': (direction, dx, dy)
+            'd': (Direction.RIGHT, 1, 0),
+            'a': (Direction.LEFT, -1, 0),
+            'w': (Direction.TOP, 0, -1),
+            's': (Direction.BOTTOM, 0, 1),
+            'l': (Direction.RIGHT, 1, 0),
+            'j': (Direction.LEFT, -1, 0),
+            'i': (Direction.TOP, 0, -1),
+            'k': (Direction.BOTTOM, 0, 1),
+        }
+
+        items = {
+            '1': "DIRT",
+            '2': "COMP",
+            '3': "WIRE_LRTB",
+            '4': "STONE",
+        }
+
         if (c == ord(' ') and debug):
             chilog("Y: " + str(self.y) + " X: " + str(self.x))
 
@@ -47,71 +68,29 @@ class Player:
             self.action = "BREAK"
 
         # Movement 
-        elif (c == ord('d')): # Move Right
-            if (self.move_legal(Direction.RIGHT, world) or debug):
-                self.x += 1
-        elif (c == ord('a')): # Move Left
-            if (self.move_legal(Direction.LEFT, world) or debug):
-                self.x -= 1
-        elif (c == ord('w')): # Move Up
-            if (self.move_legal(Direction.TOP, world) or debug):
-                self.y -= 1
-        elif (c == ord('s')): #Move Down 
-            if (self.move_legal(Direction.BOTTOM, world) or debug):
-                self.y += 1
-
+        elif (c == ord('d') or c == ord('a') or c == ord('w') or c == ord('s')):
+            dir_tuple = dir[chr(c)]
+            if (self.move_legal(dir_tuple, world) or debug):
+                self.x += dir_tuple[1]
+                self.y += dir_tuple[2]
+            
         # Block action
-        elif (c == ord('l')): #Place block right
+        elif (c == ord('i') or c == ord('j') or c == ord('k') or c == ord('l')):
+            dir_tuple = dir[chr(c)]
             if (self.action == "PLACE"):
-                if (self.place_legal(Direction.RIGHT, world)):
-                    self.place_block(Direction.RIGHT, world, stdscr)
+                if (self.place_legal(dir_tuple, world)):
+                    self.place_block(dir_tuple, world, stdscr)
             if (self.action == "BREAK"):
-                self.break_block(Direction.RIGHT, world, stdscr)
-
-        elif (c == ord('j')): #Place block right
-            if (self.action == "PLACE"):
-                if (self.place_legal(Direction.LEFT, world)):
-                    self.place_block(Direction.LEFT, world, stdscr)
-            if (self.action == "BREAK"):
-                self.break_block(Direction.LEFT, world, stdscr)
-
-        elif (c == ord('i')): #Place block right
-            if (self.action == "PLACE"):
-                if (self.place_legal(Direction.TOP, world)):
-                    self.place_block(Direction.TOP, world, stdscr)
-            if (self.action == "BREAK"):
-                self.break_block(Direction.TOP, world, stdscr)
-
-        elif (c == ord('k')): #Place block right
-            if (self.action == "PLACE"):
-                if (self.place_legal(Direction.BOTTOM, world)):
-                    self.place_block(Direction.BOTTOM, world, stdscr)
-            if (self.action == "BREAK"):
-                self.break_block(Direction.BOTTOM, world, stdscr)
+                self.break_block(dir_tuple, world, stdscr)
 
         # Inventory 
-        elif (c == ord('1')): # Inventory 1
-            self.item = "DIRT"
-        elif (c == ord('2')): # Inventory 1
-            self.item = "COMP"
-        elif (c == ord('3')): # Inventory 1
-            self.item = "WIRE_LRTB"
-        elif (c == ord('4')): # Inventory 2
-            self.item = "STONE"
-
-    
+        elif (c == ord('1') or c == ord('2') or c == ord('3') or c == ord('4')):
+            self.item = items[chr(c)]
+        
 
     # Movement Legality     
-    def move_legal(self, dir, world):
-        blocktype = ""
-        if (dir == Direction.LEFT):
-            blocktype = world.get_block_from_pos(self.y, self.x - 1).blocktypestr
-        elif (dir == Direction.BOTTOM): 
-            blocktype = world.get_block_from_pos(self.y + 1, self.x).blocktypestr
-        elif (dir == Direction.RIGHT): 
-            blocktype = world.get_block_from_pos(self.y, self.x + 1).blocktypestr
-        elif (dir == Direction.TOP):
-            blocktype = world.get_block_from_pos(self.y - 1, self.x).blocktypestr
+    def move_legal(self, dir_tuple, world):
+        blocktype = world.get_block_from_pos(self.y + dir_tuple[2], self.x + dir_tuple[1]).blocktypestr
 
         if (blocktype == "WATER" or blocktype == "AIR" or "WIRE" in blocktype):
             return True 
@@ -120,38 +99,16 @@ class Player:
 
 
     # Block placement legality 
-    def place_legal(self, dir, world):
-        blocktype = ""
-        if (dir == Direction.LEFT):
-            blocktype = world.get_block_from_pos(self.y, self.x - 1).blocktypestr
-        elif (dir == Direction.BOTTOM): 
-            blocktype = world.get_block_from_pos(self.y + 1, self.x).blocktypestr
-        elif (dir == Direction.RIGHT): 
-            blocktype = world.get_block_from_pos(self.y, self.x + 1).blocktypestr
-        elif (dir == Direction.TOP):
-            blocktype = world.get_block_from_pos(self.y - 1, self.x).blocktypestr
+    def place_legal(self, dir_tuple, world):
+        blocktype = world.get_block_from_pos(self.y + dir_tuple[2], self.x + dir_tuple[1]).blocktypestr
 
         if (blocktype == "WATER" or blocktype == "AIR"):
             return True 
         else:
             return False 
 
-    def place_block(self, dir, world, stdscr):
-        if (dir == Direction.LEFT):
-            world.map[self.y][self.x - 1] = blocks.Block(self.item, stdscr, self.y, self.x - 1)
-        elif (dir == Direction.BOTTOM): 
-            world.map[self.y + 1][self.x] = blocks.Block(self.item, stdscr, self.y + 1, self.x)
-        elif (dir == Direction.RIGHT): 
-            world.map[self.y][self.x + 1] = blocks.Block(self.item, stdscr, self.y, self.x + 1)
-        elif (dir == Direction.TOP):
-            world.map[self.y - 1][self.x] = blocks.Block(self.item, stdscr, self.y - 1, self.x)
+    def place_block(self, dir_tuple, world, stdscr):
+        world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = blocks.Block(self.item, stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
 
-    def break_block(self, dir, world, stdscr):
-        if (dir == Direction.LEFT):
-            world.map[self.y][self.x - 1] = blocks.Block("AIR", stdscr, self.y, self.x - 1)
-        elif (dir == Direction.BOTTOM): 
-            world.map[self.y + 1][self.x] = blocks.Block("AIR", stdscr, self.y + 1, self.x)
-        elif (dir == Direction.RIGHT): 
-            world.map[self.y][self.x + 1] = blocks.Block("AIR", stdscr, self.y, self.x + 1)
-        elif (dir == Direction.TOP):
-            world.map[self.y - 1][self.x] = blocks.Block("AIR", stdscr, self.y - 1, self.x)
+    def break_block(self, dir_tuple, world, stdscr):
+        world.map[self.y + dir_tuple[2]][self.x + dir_tuple[1]] = blocks.Block("AIR", stdscr, self.y + dir_tuple[2], self.x + dir_tuple[1])
