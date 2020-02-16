@@ -623,14 +623,14 @@ class Block:
     b = Block("STONE", self.stdscr)
 
     """
-    def __init__(self, blocktype, screen, locY, locX): 
+    def __init__(self, blocktype, screen, y, x): 
         self.blocktypestr = blocktype
         self.blocktype = BType(blocktype)
         self.screen = screen
-        self.locY = locY
-        self.locX = locX
+        self.y = y # Map array Index
+        self.x = x # Map array index
 
-    def draw(self, locY, locX):
+    def draw(self, locY, locX): #Screen coords
         """
         This function draws out a particular block given screen location
         
@@ -638,13 +638,16 @@ class Block:
         """
         # print('=========' )
         # curses.init_pair(9, curses.COLOR_RED, curses.COLOR_WHITE)
-        self.locY = locY
-        self.locX = locX
+
         for i in range(3):
             for j in range(5):
-                self.screen.addstr(self.locY + i, self.locX + j, self.blocktype.blocks[i][j].char, self.blocktype.blocks[i][j].colorpair)
+                self.screen.addstr(locY + i, locX + j, self.blocktype.blocks[i][j].char, self.blocktype.blocks[i][j].colorpair)
         
     def type(self):
         return self.blocktypestr
 
         # self.screen.addstr(self.locX, self.locY, str(self.blocktype.blocks), curses.color_pair(9))
+    
+    def coords(self):
+        return self.y, self.x
+

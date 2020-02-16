@@ -38,7 +38,7 @@ class World:
                 tmp.append(b)
             self.map.append(tmp)
 
-        for j in range(World.ground+World.dirt_depth, World.max_y - 1):
+        for j in range(World.ground+World.dirt_depth, World.max_y):
             tmp = []
             for i in range (World.max_x):
                 b = blocks.Block("STONE", self.stdscr, j, i)
@@ -158,15 +158,12 @@ class World:
         self.cave_gen()
         
         # Add bedrock
-        for j in range(World.max_y - 1, World.max_y):
-            tmp = []
-            for i in range (World.max_x):
-                b = blocks.Block("BEDROCK", self.stdscr, j, i)
-                tmp.append(b)
-            self.map.append(tmp)
+        for i in range (World.max_x):
+            self.map[World.max_y-1][i] = blocks.Block("BEDROCK", self.stdscr, World.max_y-1, i)
 
 
-
+    
+    ## Helper Functions
 
 
     def convert_lake(self, y, x, prob, limit, checked) :
@@ -175,7 +172,7 @@ class World:
             return
         elif ((y,x) in checked) :
             return
-        elif (y < 0 or y > World.max_y) :
+        elif (y < 0 or y >= World.max_y) :
             return
         checked.add((y, x))
         self.map[y][x] = blocks.Block("WATER", self.stdscr, y, x)
@@ -237,16 +234,17 @@ class World:
             self.convert_dirt(y-1, x, prob * dec, limit-1, checked)
         return
         
-    def cave_gen(self) :
         
-        cave_num = World.max_x // 60
+    
+    def cave_gen(self) :
+        cave_num = World.max_x // 30
         cave_num = random.randint(round(cave_num * 0.6), round(cave_num * 1.4))
         checked = set()
         prob = 0.9
         limit = 50
         for i in range(cave_num) :
             x = random.randrange(0, World.max_x)
-            y = random.randrange(World.max_y - World.cave_depth, World.max_y)
+            y = random.randrange(World.max_y - World.cave_depth, World.max_y-2)
             self.cave_dig(y, x, prob, limit, checked)
             checked.clear()
             
@@ -259,42 +257,39 @@ class World:
         elif (y < 0 or y >= World.max_y) :
             return
         checked.add((y, x))
-        # Water check
-        #water_check = self.cave_dig_water_check(y,x)
-        #if water_check == 0 or water_check == 1 :
-        #    return
-        #elif water_check >= 2 :
-        #    self.map[y][x] = blocks.Block("AIR", self.stdscr, y, x)
-        #    return;
         if self.map[y][x].blocktypestr == "WATER" :
+            self.coalesce_water(y, x)
             return
         self.map[y][x] = blocks.Block("AIR", self.stdscr, y, x)
+        self.map[y][(x-1) % World.max_x] = blocks.Block("AIR", self.stdscr, y, (x-1) % World.max_x)
+        self.map[y][(x+1) % World.max_x] = blocks.Block("AIR", self.stdscr, y, (x+1) % World.max_x)
         if (random.random() < prob) :
-            dec = 0.95
-            self.convert_lake(y,x-1, prob * dec, limit-1, checked)
-            self.convert_lake(y, x+1, prob * dec, limit-1, checked)
-            extra = random.uniform(0.85, 1)
-            if(random.random() < 0.7) :
-                self.convert_lake(y+1, x+1, prob * dec * extra, limit-1, checked)
-            if(random.random() < 0.7) :
-                self.convert_lake(y+1, x-1, prob * dec * extra, limit-1, checked)
-            if(random.random() < 0.7) :
-                self.convert_lake(y-1, x+1, prob * dec * extra, limit-1, checked)
-            if(random.random() < 0.7) :
-                self.convert_lake(y-1, x-1, prob * dec * extra, limit-1, checked)
+            dec = 0.9
+            #self.cave_dig(y,x-1, prob * dec, limit-1, checked)
+            #self.cave_dig(y, x+1, prob * dec, limit-1, checked)
+            self.cave_dig(y, x-2, prob * dec, limit-1, checked)
+            self.cave_dig(y, x+2, prob * dec, limit-1, checked)
+            extra = random.uniform(0.5, 1)
+            extra2 = random.uniform(0.5, 1)
+            determinant = random.random()
+            determinant2 = random.random()
+            if(determinant < 0.7) :
+                if (determinant2 < 0.5) :
+                    self.cave_dig(y+1, x+2, prob * dec * extra, limit-1, checked)
+                    self.cave_dig(y-1, x-2, prob * dec * extra2, limit-1, checked)
+                else :
+                    self.cave_dig(y+1, x-2, prob * dec * extra2, limit-1, checked)
+                    self.cave_dig(y-1, x+2, prob * dec * extra, limit-1, checked)
+            if (determinant < 0.2) :
+                if (determinant2 < 0.5) :
+                    self.cave_dig(y+2, x+2, prob * dec * extra, limit-1, checked)
+                    self.cave_dig(y-2, x-2, prob * dec * extra2, limit-1, checked)
+                else :
+                    self.cave_dig(y+2, x-2, prob * dec * extra2, limit-1, checked)
+                    self.cave_dig(y-2, x+2, prob * dec * extra, limit-1, checked)
         return
-    
-    def cave_dig_water_check(self, y, x) :
-        length_arr = [0,1,-1,2,-2]
-        for j in length_arr :
-            cy = y + j
-            if (cy >= World.max_y or cy < 0) :
-                continue
-            for i in length_arr :
-                cx = (x + i) % World.max_x
-                if self.map[cy][cx].blocktypestr == "WATER" :
-                    return min(math.abs(j), math.abs(i))
-        return -1
+
+
         
 
     def spawn(self):
@@ -321,4 +316,35 @@ class World:
         """
         y, x: index of block
         """
+        if (y < 0 or y >= World.max_y) :
+            return None
         return self.map[y][x % World.max_x] # wraping
+
+    def coalesce_water(self, y, x):
+        """
+        y and x denotes the map position of the broken block
+        
+        will need to check for the blocks around it (TOP, LEFT, RIGHT), and see if 
+        they're a water block. If so, this block becomes water too
+
+        Then, if the LEFT, RIGHT, BOTTOM blocks are air, call coalesce on them too
+        """
+        if (y < 0 or y >= World.max_y) :
+            return
+        block_top_type = self.get_block_from_pos(y - 1, x).blocktypestr
+        block_left_type = self.get_block_from_pos(y, x - 1).blocktypestr
+        block_right_type = self.get_block_from_pos(y, x + 1).blocktypestr
+        
+        if (block_top_type == "WATER" or block_left_type == "WATER" or block_right_type == "WATER"):
+            self.map[y][x % World.max_x] = blocks.Block("WATER", self.stdscr, y, x % World.max_x)
+            next_block_left_type = self.get_block_from_pos(y, x - 1).blocktypestr
+            next_block_right_type = self.get_block_from_pos(y, x + 1).blocktypestr
+            next_block_bottom_type = self.get_block_from_pos(y + 1, x).blocktypestr
+
+            if (next_block_left_type == "AIR"):
+                self.coalesce_water(y, x - 1)
+            elif (next_block_right_type == "AIR"):
+                self.coalesce_water(y, x + 1)
+            elif (next_block_bottom_type == "AIR"):
+                self.coalesce_water(y + 1, x)
+
