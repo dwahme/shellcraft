@@ -3,16 +3,21 @@ from . import blocks, computer, player, world
 import time
 import copy
 import math
+import os
+from pathlib import Path
 from .enums.direction import Direction
 from .utils.chilog import chilog
 
 class Game:
 
-    def __init__(self):
+    def __init__(self, editor):
         self.player = player.Player()
         self.world = None
         self.stdscr = None
         self.computers = []
+
+        # Set the default editor
+        computer.Computer.EDITOR = editor
 
     def render_world(self):
         h, w = self.stdscr.getmaxyx()
@@ -80,8 +85,13 @@ class Game:
 
     # Actually runs the game
     def run(self):
-        curses.wrapper(self.__main)
+        # Prepare for logging and program files
+        if os.path.exists("demofile.txt"):
+            os.remove("demofile.txt")
+        Path("./computer_files").mkdir(parents=True, exist_ok=True)
 
+        # Run the game
+        curses.wrapper(self.__main)
     
     
     # UTILITY 
