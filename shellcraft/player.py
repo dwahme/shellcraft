@@ -119,6 +119,8 @@ class Player:
         else:
             return False 
 
+            
+    # Block placement
     def place_block(self, dir_tuple, world, stdscr, game):
         new_x = (self.x + dir_tuple[1]) % world.max_x
         b = blocks.Block(self.item, stdscr, self.y + dir_tuple[2], new_x)
