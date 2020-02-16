@@ -11,30 +11,31 @@ class MType():
         blocklist = {
             "MONITORBASIC": [
                 [
-                    Pixel(" ", 15, 0, 601), 
-                    Pixel(" ", 15, 0, 602),
-                    Pixel(" ", 15, 0, 603),
-                    Pixel(" ", 15, 0, 604),
-                    Pixel(" ", 15, 0, 605),
+                    Pixel(" ", 15, 0, 301), 
+                    Pixel(" ", 15, 0, 302),
+                    Pixel(" ", 15, 0, 303),
+                    Pixel(" ", 15, 0, 304),
+                    Pixel(" ", 15, 0, 305),
 
                 ], 
                 [
-                    Pixel(" ", 15, 0, 606),
-                    Pixel(" ", 15, 0, 607),
-                    Pixel(" ", 15, 0, 608),
-                    Pixel(" ", 15, 0, 609),
-                    Pixel(" ", 15, 0, 610),
+                    Pixel(" ", 15, 0, 306),
+                    Pixel(" ", 15, 0, 307),
+                    Pixel(" ", 15, 0, 308),
+                    Pixel(" ", 15, 0, 309),
+                    Pixel(" ", 15, 0, 310),
 
                 ],
                 [
-                    Pixel(" ", 15, 0, 611),
-                    Pixel(" ", 15, 0, 612),
-                    Pixel(" ", 15, 0, 613),
-                    Pixel(" ", 15, 0, 614),
-                    Pixel(" ", 15, 0, 615),
+                    Pixel(" ", 15, 0, 311),
+                    Pixel(" ", 15, 0, 312),
+                    Pixel(" ", 15, 0, 313),
+                    Pixel(" ", 15, 0, 314),
+                    Pixel(" ", 15, 0, 315),
                 ]
             ]
         }
+        self.blocks = blocklist[blocktype]
     
 
 class BType(): 
@@ -783,7 +784,7 @@ class Block:
     """
     def __init__(self, blocktype, screen, y, x): 
         self.blocktypestr = blocktype
-        if not("MONITOR" in blocktype):
+        if not ("MONITOR" in blocktype):
             self.blocktype = BType(blocktype)
         else:
             self.blocktype = MType(blocktype)
