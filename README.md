@@ -1,27 +1,51 @@
 # Shellcraft
 2D Minecraft in the terminal with programmable computer blocks 
 
+Uncommon Hacks Hackathon 2020 Submission. See the Devpost project here: https://devpost.com/software/shellcraft. Awarded "Most Technically Impressive 2020"
+
 
 ## What it does
 
-Essentially, this is a Terminal/Shell Video Game, heavily influenced by Minecraft/Terraria. This is implemented completely in the terminal, and supports programmable computer blocks which allow running arbitrary programs and IO interfacing with other computer blocks. You can create a network!
+Essentially, this is a Terminal/Shell Video Game, heavily influenced by Minecraft/Terraria. This is implemented completely in the terminal, and supports programmable computer blocks which allow running arbitrary programs and IO interfacing with other computer blocks. You can build networks of computers in the game!
 
 ### Features:
 - **Programmable computer block** 
-  - (__Arbitrary__ language supported blocks, programmable with __any__ text editor in game, capable of receiving and transmitting IO via local __ports__, __sockets__, and __threads__)
-  - (Computer blocks are able to detect IO on ports based upon wiring in the game. Configured through applying BFS on a network tree)
-  - (Adjacent monitors combine to one giant monitor that supports any resolution, displays text output sent via signals from computer blocks)
+  - __Arbitrary__ language supported blocks, programmable with __any__ text editor in game, capable of receiving and transmitting IO via local __ports__, __sockets__, and __threads__
+  - Computer blocks are able to detect IO on ports based upon wiring in the game. Configured through applying BFS on a network tree
+  - Adjacent monitors combine to one giant monitor that supports any resolution, displays text output sent via signals from computer blocks
 
 -  **2D-Minecraft Creative mode** 
-  - (Map exploration, block placement, block deletion, player movement, character inventory etc.)
+  - Map exploration, block placement, block deletion, player movement, character inventory etc.
   - **Cool Inter-block Interactions**
-    - (Chain-able TNT, Fluid dynamics, Water-lava obsidian generation, Optional player gravity)
+    - Chain-able TNT, Fluid dynamics, Water-lava obsidian generation, Optional player gravity
 
 - **Game Engine**
    - **Renders** the game, **transfer IO**, **manages block resources**, **physics engine**
-   - **Seeded terrain generation using various statistical methods** 
-        - (Caves, Lakes, Mountains, Grass) 
+   - **Seeded terrain generation generation using various statistical methods** 
+        - Caves, Lakes, Mountains, Grass
    - **Dynamic terrain plant regeneration**
+   
+## Computers/Networks/IO
+- **Computer Blocks**
+  - Runs a command or program in a separate process
+  - Supports piping stdin and stdout to and from the computer via the Computer class
+  - Has a sentinel thread in the game which queues up its outputs on its ports
+  - Has 4 IO ports- one on each side
+
+- **Pi Blocks**
+  - A specialized computer block which broadcasts and recieves on all sides through the same port
+  - Useful for handling programs that don't follow the networking interface
+    - Try running `telnet towel.blinkenlights.nl` as the runtime!
+  
+- **Wires**
+  - Automatically detects and updates networks of computers and monitors
+  - Broadcasts data across the network
+  - Handles cycles and updates in real time
+  
+- **Monitors**
+  - Display data that is sent to them from any side
+  - Automatically joins together with adjacent monitor blocks to form a larger monitor screen (updates in real time)
+
 
 ## The Team 
 - [Dawson Whitehead](https://github.com/dwahme)
@@ -31,6 +55,7 @@ Essentially, this is a Terminal/Shell Video Game, heavily influenced by Minecraf
 
 
 ## What's next for Shellcraft
+- Saving/loading worlds
 - Multiplayer 
 - Advanced computing interfaces (More IO Devices)
 - GUI (Terminal)
@@ -39,12 +64,29 @@ Essentially, this is a Terminal/Shell Video Game, heavily influenced by Minecraf
 - Survival Mode 
 
 
+## Interesting Technical Challenges
+- Coordinate translation for rendering 
+    - Converting map coordinates to screen coordinates and back 
+    - Screen was centred around the player
+    - Each block was 3 tall 5 wide for the desired aspect ratio 
+
+- Seeded map generation 
+    - Generating mountains 
+        - Guiding a general convex shape generation with mountains 
+        - Fine tuning parameters 
+
+- Network ecosystem
+     - Merging adjacent monitor blocks into 1 large screen using BFS 
+     - Transferring IO between connected devices 
+     - Handling appropriate threads and sockets 
+     - Defining a computer network
+
 ## To Run:
-`python3 main.py` Should be able to handle everything 
+`python3 main.py` Runs the entire game with default settings
 
-`python3 main.py -h` To view more options 
+`python3 main.py -h` To view usage options 
 
-## Controlls:
+## Controls:
 ```
 WASD - Player movement 
 
@@ -65,7 +107,6 @@ Iventory:
 8 - PI 
 
 Further bindings can be configured in player.py
-
 ```
 
 ## Enjoy!
