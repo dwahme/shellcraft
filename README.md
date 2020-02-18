@@ -3,8 +3,6 @@
 
 Uncommon Hacks Hackathon 2020 Submission. See the Devpost project here: https://devpost.com/software/shellcraft. Awarded "Most Technically Impressive 2020"
 
-This only uses python library packages, so it should work on any Unix system. Windows is a bit weird- we will try to debug it later. There's a lot of bugs due to only having 24 hours to implement at the hackathon; we'll try to fix them at some point
-
 
 ## What it does
 
