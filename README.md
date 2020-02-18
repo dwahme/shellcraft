@@ -14,10 +14,10 @@ Essentially, this is a Terminal/Shell Video Game, heavily influenced by Minecraf
   - Computer blocks are able to detect IO on ports based upon wiring in the game. Configured through applying BFS on a network tree
   - Adjacent monitors combine to one giant monitor that supports any resolution, displays text output sent via signals from computer blocks
 
--  **2D-Minecraft Creative mode** 
-  - Map exploration, block placement, block deletion, player movement, character inventory etc.
-  - **Cool Inter-block Interactions**
-    - Chain-able TNT, Fluid dynamics, Water-lava obsidian generation, Optional player gravity
+ - **2D-Minecraft Creative mode** 
+   - Map exploration, block placement, block deletion, player movement, character inventory etc.
+ - **Cool Inter-block Interactions**
+   - Chain-able TNT, Fluid dynamics, Water-lava obsidian generation, Optional player gravity
 
 - **Game Engine**
    - **Renders** the game, **transfer IO**, **manages block resources**, **physics engine**
@@ -40,11 +40,12 @@ Essentially, this is a Terminal/Shell Video Game, heavily influenced by Minecraf
 - **Wires**
   - Automatically detects and updates networks of computers and monitors
   - Broadcasts data across the network
-  - Handles cycles and updates in real time
+  - Handles cycles and updates in real time (uses BFS for network detection)
   
 - **Monitors**
   - Display data that is sent to them from any side
   - Automatically joins together with adjacent monitor blocks to form a larger monitor screen (updates in real time)
+  - Uses BFS for joining monitor blocks
 
 
 ## The Team 
