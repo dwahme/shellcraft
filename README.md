@@ -10,7 +10,7 @@ Essentially, this is a Terminal/Shell Video Game, heavily influenced by Minecraf
 
 ### Features:
 - **Programmable computer block** 
-  - __Arbitrary__ language supported blocks, programmable with __any__ text editor in game, capable of receiving and transmitting IO via local __ports__, __sockets__, and __threads__
+  - __Arbitrary__ language supported blocks, programmable with __any__ terminal-based text editor in game, capable of receiving and transmitting IO via local __ports__, __sockets__, and __threads__
   - Computer blocks are able to detect IO on ports based upon wiring in the game. Configured through applying BFS on a network tree
   - Adjacent monitors combine to one giant monitor that supports any resolution, displays text output sent via signals from computer blocks
 
